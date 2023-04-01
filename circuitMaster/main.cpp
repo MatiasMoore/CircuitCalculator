@@ -63,8 +63,10 @@ class CircuitConnection
     ConnectionType type;
     QList<CircuitElement> elements;
     QList<CircuitConnection*> children;
+    CircuitConnection* parent = NULL;
     CircuitConnection* next = NULL;
     double resistance = 0;
+    double voltage = -1;
     public:
     double calculateResistance(double frequency)
     {
@@ -100,29 +102,44 @@ class CircuitConnection
     }
 };
 
-CircuitConnection* parseChildren(QMap<int, CircuitConnection>& map, QDomNode node)
+CircuitConnection* parseChildren(QMap<int, CircuitConnection>& map, QDomNode node, CircuitConnection* parentPtr)
 {
     QDomElement element = node.toElement();
     QString nodeType = element.tagName();
     QDomNodeList children = node.childNodes();
 
-    CircuitConnection circuit;
-
     if (nodeType == "volt")
     {
+        if (parentPtr != NULL)
+        {
+            QDomElement voltageNode = node.firstChildElement("value");
+            if (!voltageNode.isNull())
+                parentPtr->voltage = voltageNode.toElement().text().toDouble();
+        }
         return NULL;
     }
-    else if (nodeType == "seq")
+
+    CircuitConnection newCircuit;
+
+    int newId = map.keys().count() + 1;
+    newCircuit.id = QString::number(newId);
+    newCircuit.parent = parentPtr;
+    map.insert(newId, newCircuit);
+    qDebug() << "Added " << element.tagName();
+
+    CircuitConnection* circuit = &map[newId];
+
+    if (nodeType == "seq")
     {
-        circuit.type = CircuitConnection::ConnectionType::sequential;
+        circuit->type = CircuitConnection::ConnectionType::sequential;
         bool isComplex = !node.firstChildElement("seq").isNull() || !node.firstChildElement("par").isNull();
         if (isComplex)
         {
-            circuit.type = CircuitConnection::ConnectionType::sequentialComplex;
+            circuit->type = CircuitConnection::ConnectionType::sequentialComplex;
             CircuitConnection* prevChild = NULL;
             for(int i = 0; i < children.count(); i++)
             {
-                CircuitConnection* currChildPtr = parseChildren(map, children.at(i));
+                CircuitConnection* currChildPtr = parseChildren(map, children.at(i), circuit);
                 if (prevChild != NULL)
                 {
                     prevChild->next = currChildPtr;
@@ -130,7 +147,7 @@ CircuitConnection* parseChildren(QMap<int, CircuitConnection>& map, QDomNode nod
                 if (currChildPtr != NULL)
                 {
                     prevChild = currChildPtr;
-                    circuit.addChild(currChildPtr);
+                    circuit->addChild(currChildPtr);
                 }
             }
         }
@@ -143,24 +160,21 @@ CircuitConnection* parseChildren(QMap<int, CircuitConnection>& map, QDomNode nod
                 {
                     CircuitElement::ElemType type = CircuitElement::elemTypeFromStr(currElem.firstChildElement("type").text());
                     double value = currElem.firstChildElement("value").text().toDouble();
-                    circuit.addElement(CircuitElement(type, value));
+                    circuit->addElement(CircuitElement(type, value));
                 }
             }
         }
     }
     else if (nodeType == "par")
     {
-        circuit.type = CircuitConnection::ConnectionType::parallel;
+        circuit->type = CircuitConnection::ConnectionType::parallel;
         for(int i = 0; i < children.count(); i++)
         {
-            circuit.addChild(parseChildren(map, children.at(i)));
+            circuit->addChild(parseChildren(map, children.at(i), circuit));
         }
     }
-    int newId = map.keys().count() + 1;
-    circuit.id = QString::number(newId);
-    map.insert(newId, circuit);
-    qDebug() << "Added " << element.tagName();
-    return &map[newId];
+
+    return circuit;
 }
 
 void printElement(CircuitElement& elem, QString prefix)
@@ -212,7 +226,11 @@ void printConnection(CircuitConnection& circ, QString prefix)
 
     setConsoleColor(connectionColor);
 
-
+    bool hasParent = circ.parent != NULL;
+    if (hasParent)
+        qDebug() << prefix + "Parent Id =" << circ.parent->id;
+    else
+        qDebug() << "ROOT ELEMENT";
     qDebug() << prefix + "ID =" << circ.id;
     CircuitConnection::ConnectionType type = circ.type;
     QString typeStr;
@@ -223,6 +241,7 @@ void printConnection(CircuitConnection& circ, QString prefix)
     else if (type == CircuitConnection::ConnectionType::sequentialComplex)
         typeStr = "sequentialComplex";
     qDebug() << prefix + "Type =" << typeStr;
+    qDebug() << prefix + "Voltage =" << circ.voltage;
     bool hasElements = circ.elements.count() != 0;
     if (hasElements)
     {
@@ -252,7 +271,7 @@ void printConnection(CircuitConnection& circ, QString prefix)
         qDebug() << prefix + "Next Id =" << circ.next->id;
     }
 
-
+    setConsoleColor(7);
 }
 
 int main(int argc, char *argv[])
@@ -277,15 +296,15 @@ int main(int argc, char *argv[])
     QDomNodeList list = domNode.childNodes();
 
 
-    parseChildren(connects, rootElement);
+    parseChildren(connects, rootElement, NULL);
     qDebug() << "Num of connections ="<< connects.count();
     qDebug() << "-----------------------------------------";
 
 
 
 
-    printConnection(connects[connects.lastKey()], "  ");
-    setConsoleColor(0);
+    printConnection(connects[*connects.keyBegin()], "  ");
+    qDebug() << "MEGA ASSSSS";
 
     return 0;
 
