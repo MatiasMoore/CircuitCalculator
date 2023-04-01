@@ -1,59 +1,41 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <seq>
 	<volt>
-		<value>20</value>
+		<value>36</value>
 		<freq>50</freq>
 	</volt>
-	<seq>
-		<seq>
-			<elem>
-				<type>R</type>
-				<value>1</value>
-			</elem>
-		</seq>
-		<par>
-			<seq>
-				<elem>
-					<type>R</type>
-					<value>1.1</value>
-				</elem>
-			</seq>
-			<seq>
-				<elem>
-					<type>R</type>
-					<value>1.2</value>
-				</elem>
-			</seq>
-		</par>
-		<seq>
-			<elem>
-				<type>R</type>
-				<value>15</value>
-			</elem>
-		</seq>
+	<seq name="I1">
+		<elem>
+			<type>R</type>
+			<value>3</value>
+		</elem>
 	</seq>
 	<par>
-		<seq>
+		<seq name="I3">
 			<elem>
 				<type>R</type>
-				<value>4</value>
-			</elem>
-			<elem>
-				<type>R</type>
-				<value>5</value>
+				<value>20</value>
 			</elem>
 		</seq>
-		<seq>
+		<seq name="I245">
+			<elem>
+				<type>R</type>
+				<value>3</value>
+			</elem>
+			<elem>
+				<type>R</type>
+				<value>24</value>
+			</elem>
 			<elem>
 				<type>R</type>
 				<value>3</value>
 			</elem>
 		</seq>
 	</par>
-	<seq>
+	<seq name="I6">
 		<elem>
 			<type>R</type>
-			<value>2</value>
+			<value>3</value>
 		</elem>
 	</seq>
 </seq>

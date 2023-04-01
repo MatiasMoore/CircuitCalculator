@@ -59,6 +59,7 @@ class CircuitConnection
         this->type = startType;
     }
     public:
+    QString name;
     QString id;
     ConnectionType type;
     QList<CircuitElement> elements;
@@ -67,6 +68,7 @@ class CircuitConnection
     CircuitConnection* next = NULL;
     double resistance = 0;
     double voltage = -1;
+    double current = -1;
     public:
     double calculateResistance(double frequency)
     {
@@ -78,6 +80,13 @@ class CircuitConnection
                 this->resistance += this->elements[i].calculateElemResistance(frequency);
             }
         }
+        else if(this->type == ConnectionType::sequentialComplex)
+        {
+            for (int i = 0; i < this->children.count(); i++)
+            {
+                this->resistance += this->children[i]->calculateResistance(frequency);
+            }
+        }
         else
         {
             double reverseSum = 0;
@@ -87,11 +96,60 @@ class CircuitConnection
             }
             this->resistance = 1.0 / reverseSum;
         }
-        if (next != NULL)
-        {
-            return resistance + next->calculateResistance(frequency);
-        }
+        return this->resistance;
     }
+    double calculateCurrentAndVoltage()
+    {
+        this->current = 0;
+
+        if (this->parent != NULL)
+        {
+            if (this->parent->type == CircuitConnection::ConnectionType::sequentialComplex)
+            {
+                this->current = parent->current;
+            }
+            else if (this->parent->type == CircuitConnection::ConnectionType::parallel)
+            {
+                this->voltage = parent->voltage;
+            }
+        }
+
+        if (this->current == -1 && this->voltage == -1)
+        {
+            qDebug() << "no voltage and current";
+        }
+
+        if (this->current == -1)
+        {
+            this->current = this->voltage / this->resistance;
+        }
+        else if (this->voltage == -1)
+        {
+            this->voltage = this->current * this->resistance;
+        }
+
+        this->current = this->voltage / this->resistance;
+
+        //bool hasNext = this->next != NULL;
+        //if (hasNext)
+        //{
+        //    next->voltage = this->current * next->resistance;
+        //}
+
+        bool hasChildren = this->children.count() != 0;
+        if (hasChildren)
+        {
+            for(int i = 0; i < this->children.count(); i++)
+            {
+                CircuitConnection* child = this->children[i];
+                child->calculateCurrentAndVoltage();
+            }
+        }
+
+        return 0;
+    }
+
+
     bool addElement(CircuitElement newElem)
     {
         this->elements.append(newElem);
@@ -124,6 +182,7 @@ CircuitConnection* parseChildren(QMap<int, CircuitConnection>& map, QDomNode nod
     int newId = map.keys().count() + 1;
     newCircuit.id = QString::number(newId);
     newCircuit.parent = parentPtr;
+    newCircuit.name = element.attribute("name", "");
     map.insert(newId, newCircuit);
     qDebug() << "Added " << element.tagName();
 
@@ -241,7 +300,9 @@ void printConnection(CircuitConnection& circ, QString prefix)
     else if (type == CircuitConnection::ConnectionType::sequentialComplex)
         typeStr = "sequentialComplex";
     qDebug() << prefix + "Type =" << typeStr;
+    qDebug() << prefix + "Resistance =" << circ.resistance;
     qDebug() << prefix + "Voltage =" << circ.voltage;
+    qDebug() << prefix + "Current =" << circ.current;
     bool hasElements = circ.elements.count() != 0;
     if (hasElements)
     {
@@ -295,16 +356,27 @@ int main(int argc, char *argv[])
     QDomNode domNode = rootElement;
     QDomNodeList list = domNode.childNodes();
 
-
     parseChildren(connects, rootElement, NULL);
     qDebug() << "Num of connections ="<< connects.count();
     qDebug() << "-----------------------------------------";
 
 
-
+    connects[*connects.keyBegin()].calculateResistance(1);
+    connects[*connects.keyBegin()].calculateCurrentAndVoltage();
 
     printConnection(connects[*connects.keyBegin()], "  ");
-    qDebug() << "MEGA ASSSSS";
+
+    auto keyIter = connects.keyBegin();
+
+    while (keyIter != connects.keyEnd())
+    {
+        CircuitConnection& currCirc = connects[*keyIter];
+        if (currCirc.name.length() > 0)
+        {
+            qDebug() << currCirc.name + " = " + QString::number(currCirc.current);
+        }
+        keyIter++;
+    }
 
     return 0;
 
