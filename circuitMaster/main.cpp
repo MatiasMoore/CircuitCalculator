@@ -48,7 +48,7 @@ class CircuitConnection
     public:
     enum class ConnectionType
     {
-        parallel, sequential, sequentialComplex
+        invalid, parallel, sequential, sequentialComplex
     };
     CircuitConnection()
     {
@@ -72,46 +72,53 @@ class CircuitConnection
     public:
     double calculateResistance(double frequency)
     {
+        // Считаем сопротивление равным нулю
         this->resistance = 0;
+
+        // Для простого последовательного соединения
         if (this->type == ConnectionType::sequential)
         {
+            // Сопротивление цепи равно сумме сопротивлений её элементов
             for (int i = 0; i < this->elements.count(); i++)
             {
                 this->resistance += this->elements[i].calculateElemResistance(frequency);
             }
         }
+        // Для сложного последовательного соединения
         else if(this->type == ConnectionType::sequentialComplex)
         {
+            // Сопротивление цепи равно сумме сопротивлений её соединений-детей
             for (int i = 0; i < this->children.count(); i++)
             {
                 this->resistance += this->children[i]->calculateResistance(frequency);
             }
         }
-        else
+        // Для параллельного соединения
+        else if (this->type == ConnectionType::parallel)
         {
+            // Находим сумму обратных значений сопротивления соединений-детей
             double reverseSum = 0;
             for (int i = 0; i < this->children.count(); i++)
             {
                 reverseSum += 1.0 / this->children[i]->calculateResistance(frequency);
             }
+            // Находим сопротивление параллельной цепи
             this->resistance = 1.0 / reverseSum;
         }
         return this->resistance;
     }
+
     double calculateCurrentAndVoltage()
     {
-        this->current = 0;
-
+        // Если есть соединение-родитель - наследуем значения тока или напряжения
         if (this->parent != NULL)
         {
+            // Наследуем силу тока если родитель - последовательное соединение
             if (this->parent->type == CircuitConnection::ConnectionType::sequentialComplex)
-            {
                 this->current = parent->current;
-            }
+            // Наследуем напряжение если родитель - параллельное соединение
             else if (this->parent->type == CircuitConnection::ConnectionType::parallel)
-            {
                 this->voltage = parent->voltage;
-            }
         }
 
         if (this->current == -1 && this->voltage == -1)
@@ -119,23 +126,14 @@ class CircuitConnection
             qDebug() << "no voltage and current";
         }
 
+        // Вычисляем оставшуюся неизвестную величину
         if (this->current == -1)
-        {
             this->current = this->voltage / this->resistance;
-        }
         else if (this->voltage == -1)
-        {
             this->voltage = this->current * this->resistance;
-        }
 
-        this->current = this->voltage / this->resistance;
 
-        //bool hasNext = this->next != NULL;
-        //if (hasNext)
-        //{
-        //    next->voltage = this->current * next->resistance;
-        //}
-
+        // Рекурсивно вычисляем силу тока и напряжение всех детей, если они имеются
         bool hasChildren = this->children.count() != 0;
         if (hasChildren)
         {
@@ -154,18 +152,35 @@ class CircuitConnection
     {
         this->elements.append(newElem);
     }
+
     bool addChild(CircuitConnection* newChildCircuit)
     {
         this->children.append(newChildCircuit);
     }
+
+    static ConnectionType strToConnectionType(QString strType)
+    {
+        ConnectionType type;
+        if (strType == "seq")
+            type = ConnectionType::sequential;
+        else if (strType == "par")
+            type = ConnectionType::parallel;
+        else
+            type = ConnectionType::invalid;
+        return type;
+    }
+
 };
 
-CircuitConnection* parseChildren(QMap<int, CircuitConnection>& map, QDomNode node, CircuitConnection* parentPtr)
+
+
+CircuitConnection* parseConnectionChildren(QMap<int, CircuitConnection>& map, QDomNode node, CircuitConnection* parentPtr)
 {
     QDomElement element = node.toElement();
     QString nodeType = element.tagName();
     QDomNodeList children = node.childNodes();
 
+    // Если это элемент источник напряжения - сохранить напряжение и частоту
     if (nodeType == "volt")
     {
         if (parentPtr != NULL)
@@ -177,59 +192,72 @@ CircuitConnection* parseChildren(QMap<int, CircuitConnection>& map, QDomNode nod
         return NULL;
     }
 
+
+    // Создаём новый объект соединения
     CircuitConnection newCircuit;
 
+    // Присваеваем ему уникальный id
     int newId = map.keys().count() + 1;
     newCircuit.id = QString::number(newId);
+
+    // Его родителем является объект, который рекурсивно вызвал функцию
     newCircuit.parent = parentPtr;
     newCircuit.name = element.attribute("name", "");
+
+    // Добавляем объект в QMap всех соединений цепи
     map.insert(newId, newCircuit);
     qDebug() << "Added " << element.tagName();
 
+    // Указатель на новый объект соединения в QMap для дальнейшего его заполнения
     CircuitConnection* circuit = &map[newId];
 
-    if (nodeType == "seq")
+    // Определить тип соединения
+    CircuitConnection::ConnectionType circuitType = CircuitConnection::strToConnectionType(nodeType);
+    if (circuitType == CircuitConnection::ConnectionType::sequential && (!node.firstChildElement("seq").isNull() || !node.firstChildElement("par").isNull()))
+        circuitType = CircuitConnection::ConnectionType::sequentialComplex;
+
+    circuit->type = circuitType;
+
+    // Для простого последовательного соединения
+    if (circuitType == CircuitConnection::ConnectionType::sequential)
     {
-        circuit->type = CircuitConnection::ConnectionType::sequential;
-        bool isComplex = !node.firstChildElement("seq").isNull() || !node.firstChildElement("par").isNull();
-        if (isComplex)
+        // Добавляем все элементы в соединение
+        for(int i = 0; i < children.count(); i++)
         {
-            circuit->type = CircuitConnection::ConnectionType::sequentialComplex;
-            CircuitConnection* prevChild = NULL;
-            for(int i = 0; i < children.count(); i++)
+            QDomElement currElem = children.at(i).toElement();
+            if (currElem.tagName() == "elem")
             {
-                CircuitConnection* currChildPtr = parseChildren(map, children.at(i), circuit);
-                if (prevChild != NULL)
-                {
-                    prevChild->next = currChildPtr;
-                }
-                if (currChildPtr != NULL)
-                {
-                    prevChild = currChildPtr;
-                    circuit->addChild(currChildPtr);
-                }
-            }
-        }
-        else
-        {
-            for(int i = 0; i < children.count(); i++)
-            {
-                QDomElement currElem = children.at(i).toElement();
-                if (currElem.tagName() == "elem")
-                {
-                    CircuitElement::ElemType type = CircuitElement::elemTypeFromStr(currElem.firstChildElement("type").text());
-                    double value = currElem.firstChildElement("value").text().toDouble();
-                    circuit->addElement(CircuitElement(type, value));
-                }
+                CircuitElement::ElemType type = CircuitElement::elemTypeFromStr(currElem.firstChildElement("type").text());
+                double value = currElem.firstChildElement("value").text().toDouble();
+                circuit->addElement(CircuitElement(type, value));
             }
         }
     }
-    else if (nodeType == "par")
+    // Для сложного последовательного соединения
+    else if (circuitType == CircuitConnection::ConnectionType::sequentialComplex)
     {
-        circuit->type = CircuitConnection::ConnectionType::parallel;
+        // Рекурсивно обрабатываем каждого ребёнка текущей цепи
+        CircuitConnection* prevChild = NULL;
         for(int i = 0; i < children.count(); i++)
         {
-            circuit->addChild(parseChildren(map, children.at(i), circuit));
+            CircuitConnection* currChildPtr = parseConnectionChildren(map, children.at(i), circuit);
+            if (prevChild != NULL)
+            {
+                prevChild->next = currChildPtr;
+            }
+            if (currChildPtr != NULL)
+            {
+                prevChild = currChildPtr;
+                circuit->addChild(currChildPtr);
+            }
+        }
+    }
+    else if (circuitType == CircuitConnection::ConnectionType::parallel)
+    {
+        // Рекурсивно обрабатываем каждого ребёнка текущей цепи
+        for(int i = 0; i < children.count(); i++)
+        {
+            circuit->addChild(parseConnectionChildren(map, children.at(i), circuit));
         }
     }
 
@@ -337,6 +365,16 @@ void printConnection(CircuitConnection& circ, QString prefix)
 
 int main(int argc, char *argv[])
 {
+    /*
+    try
+    {
+        throw "Invalid index";
+    } catch (char const* exceptionStr)
+    {
+        printf("%s\n", exceptionStr);
+    }
+    return 0;
+    */
     QMap<int, CircuitConnection> connects;
 
 
@@ -353,10 +391,8 @@ int main(int argc, char *argv[])
     QDomDocument domDocument;
     domDocument.setContent(&xmlFile);
     QDomElement rootElement = domDocument.documentElement();
-    QDomNode domNode = rootElement;
-    QDomNodeList list = domNode.childNodes();
 
-    parseChildren(connects, rootElement, NULL);
+    parseConnectionChildren(connects, rootElement, NULL);
     qDebug() << "Num of connections ="<< connects.count();
     qDebug() << "-----------------------------------------";
 
@@ -380,43 +416,6 @@ int main(int argc, char *argv[])
 
     return 0;
 
-
-
-
-
-    return 0;
-
-    QDomElement domElement = domNode.toElement();
-
-    qDebug() << domElement.tagName() + " | " + domElement.text();
-
-    return 0;
-    if (domElement.isNull())
-         qDebug() << "last sibling";
-    qDebug() << domElement.text();
-    return 0;
-    while (!domNode.isNull()) {
-        QDomElement domElement = domNode.toElement();
-        if (!domElement.isNull()) {
-            //qDebug() << domElement.tagName();
-            if (domElement.tagName() == "HEADER") {
-                QDomNode node = domElement.firstChild();
-                while (!node.isNull()) {
-                    QDomElement element = node.toElement();
-                    if (!element.isNull()) {
-                        const QString tagName(element.tagName());
-                        if (tagName == "NAME") {
-                            qDebug() << "Name is:" << element.text();
-                        } else if (tagName == "SEX") {
-                            qDebug() << "Sex is:" << element.text();
-                        }
-                    }
-                    node = node.nextSibling();
-                }
-            }
-        }
-        domNode = domNode.nextSibling();
-    }
 }
 //complex< double > z( 1.0, 2.0 );     // z = 1 + 2i
 //cout << z              << std::endl; // Комплексное число выводится в виде вектора: (1, 2)
