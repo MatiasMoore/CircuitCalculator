@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<seq>
-	<volt>
-		<value>100</value>
-	</volt>
+<seq voltage="100">
 	<seq name="I1">
 			<elem>
 				<type>C</type>

@@ -37,11 +37,9 @@ class CircuitElement
             res = {this->value, 0};
             break;
         case ElemType::L:
-            //jXl1
             res = {0, this->value};
             break;
         case ElemType::C:
-            //-jXc1
             res = {0, -this->value};
             break;
         }
@@ -83,12 +81,11 @@ class CircuitConnection
     QList<CircuitConnection*> children;
     CircuitConnection* parent = NULL;
     std::complex<double> resistance = 0;
-    std::complex<double> voltage = -1;
-    std::complex<double> current = -1;
+    std::complex<double> voltage;
+    std::complex<double> current;
     bool isVoltageSet = false;
     bool isCurrentSet = false;
     public:
-
     void setVoltage(std::complex<double> newVolt)
     {
         this->voltage = newVolt;
@@ -203,113 +200,99 @@ class CircuitConnection
         return type;
     }
 
+    static CircuitConnection* connectionFromDocElement(QMap<int, CircuitConnection>& map, QDomNode node, CircuitConnection* parentPtr)
+    {
+        QDomElement element = node.toElement();
+        QString nodeType = element.tagName();
+        QDomNodeList children = node.childNodes();
+
+        // Создаём новый объект соединения
+        CircuitConnection newCircuit;
+
+        // Присваеваем ему уникальный id
+        int newId = map.keys().count() + 1;
+        newCircuit.id = newId;
+
+        // Его родителем является объект, который рекурсивно вызвал функцию
+        newCircuit.parent = parentPtr;
+        newCircuit.name = element.attribute("name", "");
+
+        // Получаем значение напряжения, если указано
+        double voltageAtr = element.attribute("voltage", "-1").toDouble();
+         if (voltageAtr != -1)
+             newCircuit.setVoltage(voltageAtr);
+
+        // Добавляем объект в QMap всех соединений цепи
+        map.insert(newId, newCircuit);
+        qDebug() << "Added " << element.tagName();
+
+        // Указатель на новый объект соединения в QMap для дальнейшего его заполнения
+        CircuitConnection* circuit = &map[newId];
+
+        // Определить тип соединения
+        CircuitConnection::ConnectionType circuitType = CircuitConnection::strToConnectionType(nodeType);
+        bool hasSeqInside = !node.firstChildElement("seq").isNull();
+        bool hasParInside = !node.firstChildElement("par").isNull();
+        if (circuitType == CircuitConnection::ConnectionType::sequential && (hasSeqInside || hasParInside))
+            circuitType = CircuitConnection::ConnectionType::sequentialComplex;
+
+        circuit->type = circuitType;
+
+        // Для сложного последовательного соединения
+        if (circuitType == CircuitConnection::ConnectionType::sequentialComplex || circuitType == CircuitConnection::ConnectionType::parallel)
+        {
+            // Рекурсивно обрабатываем каждого ребёнка текущей цепи
+            for(int i = 0; i < children.count(); i++)
+            {
+                CircuitConnection* currChildPtr = connectionFromDocElement(map, children.at(i), circuit);
+                if (currChildPtr != NULL)
+                {
+                    circuit->addChild(currChildPtr);
+                }
+            }
+        }
+        // Для простого последовательного соединения
+        else if (circuitType == CircuitConnection::ConnectionType::sequential)
+        {
+            if (children.isEmpty())
+            {
+                std::string message;
+                message.append("No elements inside connection at line ").append(std::to_string(element.lineNumber()));
+                throw message;
+            }
+            // Добавляем все элементы в соединение
+            for(int i = 0; i < children.count(); i++)
+            {
+                QDomElement currElem = children.at(i).toElement();
+                if (currElem.tagName() == "elem")
+                {
+                    QDomElement elem = currElem.firstChildElement("type");
+                    if (elem.isNull())
+                    {
+                        std::string message;
+                        message.append("No element type at line ").append(std::to_string(currElem.lineNumber()));
+                        throw message;
+                    }
+                    CircuitElement::ElemType type = CircuitElement::elemTypeFromStr(elem.text());
+                    if (type == CircuitElement::ElemType::invalid)
+                    {
+                        std::string message;
+                        message.append("Invalid elem type at line ").append(std::to_string(currElem.lineNumber()));
+                        throw message;
+                    }
+                    double value = currElem.firstChildElement("value").text().toDouble();
+                    circuit->addElement(CircuitElement(type, value));
+                }
+            }
+        }
+        return circuit;
+    }
+
 };
 
 
 
-CircuitConnection* parseConnectionChildren(QMap<int, CircuitConnection>& map, QDomNode node, CircuitConnection* parentPtr)
-{
-    QDomElement element = node.toElement();
-    QString nodeType = element.tagName();
-    QDomNodeList children = node.childNodes();
 
-    // Если это элемент источник напряжения - сохранить напряжение и частоту
-    if (nodeType == "volt")
-    {
-        if (parentPtr != NULL)
-        {
-            QDomElement voltageNode = node.firstChildElement("value");
-            if (!voltageNode.isNull())
-                parentPtr->setVoltage(voltageNode.toElement().text().toDouble());
-        }
-        return NULL;
-    }
-
-
-    // Создаём новый объект соединения
-    CircuitConnection newCircuit;
-
-    // Присваеваем ему уникальный id
-    int newId = map.keys().count() + 1;
-    newCircuit.id = newId;
-
-    // Его родителем является объект, который рекурсивно вызвал функцию
-    newCircuit.parent = parentPtr;
-    newCircuit.name = element.attribute("name", "");
-
-    if (newCircuit.name == "")
-    {
-        newCircuit.name = "unnamed #" + QString::number(newCircuit.id);
-    }
-
-    // Добавляем объект в QMap всех соединений цепи
-    map.insert(newId, newCircuit);
-    qDebug() << "Added " << element.tagName();
-
-    // Указатель на новый объект соединения в QMap для дальнейшего его заполнения
-    CircuitConnection* circuit = &map[newId];
-
-    // Определить тип соединения
-    CircuitConnection::ConnectionType circuitType = CircuitConnection::strToConnectionType(nodeType);
-    if (circuitType == CircuitConnection::ConnectionType::sequential && (!node.firstChildElement("seq").isNull() || !node.firstChildElement("par").isNull()))
-        circuitType = CircuitConnection::ConnectionType::sequentialComplex;
-
-    circuit->type = circuitType;
-
-    // Для простого последовательного соединения
-    if (circuitType == CircuitConnection::ConnectionType::sequential)
-    {
-        if (children.isEmpty())
-        {
-            std::string message;
-            message.append("No elements inside connection at line ").append(std::to_string(element.lineNumber()));
-            throw message;
-        }
-        // Добавляем все элементы в соединение
-        for(int i = 0; i < children.count(); i++)
-        {
-            QDomElement currElem = children.at(i).toElement();
-            if (currElem.tagName() == "elem")
-            {
-                QDomElement elem = currElem.firstChildElement("type");
-                if (elem.isNull())
-                {
-                    qDebug() << "no elem type at" << currElem.lineNumber();
-                }
-                CircuitElement::ElemType type = CircuitElement::elemTypeFromStr(elem.text());
-                if (type == CircuitElement::ElemType::invalid)
-                {
-                    qDebug() << "invalid elem type at" << currElem.lineNumber();
-                }
-                double value = currElem.firstChildElement("value").text().toDouble();
-                circuit->addElement(CircuitElement(type, value));
-            }
-        }
-    }
-    // Для сложного последовательного соединения
-    else if (circuitType == CircuitConnection::ConnectionType::sequentialComplex || circuitType == CircuitConnection::ConnectionType::parallel)
-    {
-        // Рекурсивно обрабатываем каждого ребёнка текущей цепи
-        for(int i = 0; i < children.count(); i++)
-        {
-            CircuitConnection* currChildPtr = parseConnectionChildren(map, children.at(i), circuit);
-            if (currChildPtr != NULL)
-            {
-                circuit->addChild(currChildPtr);
-            }
-        }
-    }
-    //else if (circuitType == CircuitConnection::ConnectionType::parallel)
-    //{
-    //    // Рекурсивно обрабатываем каждого ребёнка текущей цепи
-    //    for(int i = 0; i < children.count(); i++)
-    //    {
-    //        circuit->addChild(parseConnectionChildren(map, children.at(i), circuit));
-    //    }
-    //}
-
-    return circuit;
-}
 
 void printElement(CircuitElement& elem, QString prefix)
 {
@@ -448,7 +431,7 @@ int main(int argc, char *argv[])
 
     try
     {
-        parseConnectionChildren(connects, rootElement, NULL);
+        CircuitConnection::connectionFromDocElement(connects, rootElement, NULL);
     }
     catch(std::string error)
     {
