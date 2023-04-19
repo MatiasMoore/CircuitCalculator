@@ -82,7 +82,6 @@ class CircuitConnection
     QList<CircuitElement> elements;
     QList<CircuitConnection*> children;
     CircuitConnection* parent = NULL;
-    CircuitConnection* next = NULL;
     std::complex<double> resistance = 0;
     std::complex<double> voltage = -1;
     std::complex<double> current = -1;
@@ -288,32 +287,26 @@ CircuitConnection* parseConnectionChildren(QMap<int, CircuitConnection>& map, QD
         }
     }
     // Для сложного последовательного соединения
-    else if (circuitType == CircuitConnection::ConnectionType::sequentialComplex)
+    else if (circuitType == CircuitConnection::ConnectionType::sequentialComplex || circuitType == CircuitConnection::ConnectionType::parallel)
     {
         // Рекурсивно обрабатываем каждого ребёнка текущей цепи
-        CircuitConnection* prevChild = NULL;
         for(int i = 0; i < children.count(); i++)
         {
             CircuitConnection* currChildPtr = parseConnectionChildren(map, children.at(i), circuit);
-            if (prevChild != NULL)
-            {
-                prevChild->next = currChildPtr;
-            }
             if (currChildPtr != NULL)
             {
-                prevChild = currChildPtr;
                 circuit->addChild(currChildPtr);
             }
         }
     }
-    else if (circuitType == CircuitConnection::ConnectionType::parallel)
-    {
-        // Рекурсивно обрабатываем каждого ребёнка текущей цепи
-        for(int i = 0; i < children.count(); i++)
-        {
-            circuit->addChild(parseConnectionChildren(map, children.at(i), circuit));
-        }
-    }
+    //else if (circuitType == CircuitConnection::ConnectionType::parallel)
+    //{
+    //    // Рекурсивно обрабатываем каждого ребёнка текущей цепи
+    //    for(int i = 0; i < children.count(); i++)
+    //    {
+    //        circuit->addChild(parseConnectionChildren(map, children.at(i), circuit));
+    //    }
+    //}
 
     return circuit;
 }
@@ -409,11 +402,11 @@ void printConnection(CircuitConnection& circ, QString prefix)
         }
         qDebug() << prefix + "======================";
     }
-    bool hasNext = circ.next != NULL;
-    if (hasNext)
-    {
-        qDebug() << prefix + "Next Id =" << circ.next->id;
-    }
+    //bool hasNext = circ.next != NULL;
+    //if (hasNext)
+    //{
+    //    qDebug() << prefix + "Next Id =" << circ.next->id;
+    //}
 
     setConsoleColor(7);
 }
