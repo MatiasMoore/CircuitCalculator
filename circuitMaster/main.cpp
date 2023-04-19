@@ -5,6 +5,7 @@
 #include <QList>
 #include <QMap>
 #include <QtXml/QDomDocument>
+#include <stdio.h>
 
 #include <windows.h>
 
@@ -13,7 +14,7 @@ class CircuitElement
     public:
     enum class ElemType
     {
-        R, L, C
+        invalid, R, L, C
     };
     CircuitElement()
     {
@@ -54,6 +55,8 @@ class CircuitElement
             return ElemType::L;
         else if (typeStr == "C")
             return ElemType::C;
+        else
+            return ElemType::invalid;
     }
 };
 
@@ -74,7 +77,7 @@ class CircuitConnection
     }
     public:
     QString name;
-    QString id;
+    int id;
     ConnectionType type;
     QList<CircuitElement> elements;
     QList<CircuitConnection*> children;
@@ -154,7 +157,7 @@ class CircuitConnection
 
         if (!this->isCurrentSet && !this->isVoltageSet)
         {
-            qDebug() << "no voltage and current";
+            qDebug() << "no voltage and current in" << this->id;
         }
 
         // Вычисляем оставшуюся неизвестную величину
@@ -218,7 +221,7 @@ CircuitConnection* parseConnectionChildren(QMap<int, CircuitConnection>& map, QD
         {
             QDomElement voltageNode = node.firstChildElement("value");
             if (!voltageNode.isNull())
-                parentPtr->voltage = voltageNode.toElement().text().toDouble();
+                parentPtr->setVoltage(voltageNode.toElement().text().toDouble());
         }
         return NULL;
     }
@@ -229,11 +232,16 @@ CircuitConnection* parseConnectionChildren(QMap<int, CircuitConnection>& map, QD
 
     // Присваеваем ему уникальный id
     int newId = map.keys().count() + 1;
-    newCircuit.id = QString::number(newId);
+    newCircuit.id = newId;
 
     // Его родителем является объект, который рекурсивно вызвал функцию
     newCircuit.parent = parentPtr;
     newCircuit.name = element.attribute("name", "");
+
+    if (newCircuit.name == "")
+    {
+        newCircuit.name = "unnamed #" + QString::number(newCircuit.id);
+    }
 
     // Добавляем объект в QMap всех соединений цепи
     map.insert(newId, newCircuit);
@@ -252,13 +260,28 @@ CircuitConnection* parseConnectionChildren(QMap<int, CircuitConnection>& map, QD
     // Для простого последовательного соединения
     if (circuitType == CircuitConnection::ConnectionType::sequential)
     {
+        if (children.isEmpty())
+        {
+            std::string message;
+            message.append("No elements inside connection at line ").append(std::to_string(element.lineNumber()));
+            throw message;
+        }
         // Добавляем все элементы в соединение
         for(int i = 0; i < children.count(); i++)
         {
             QDomElement currElem = children.at(i).toElement();
             if (currElem.tagName() == "elem")
             {
-                CircuitElement::ElemType type = CircuitElement::elemTypeFromStr(currElem.firstChildElement("type").text());
+                QDomElement elem = currElem.firstChildElement("type");
+                if (elem.isNull())
+                {
+                    qDebug() << "no elem type at" << currElem.lineNumber();
+                }
+                CircuitElement::ElemType type = CircuitElement::elemTypeFromStr(elem.text());
+                if (type == CircuitElement::ElemType::invalid)
+                {
+                    qDebug() << "invalid elem type at" << currElem.lineNumber();
+                }
                 double value = currElem.firstChildElement("value").text().toDouble();
                 circuit->addElement(CircuitElement(type, value));
             }
@@ -350,6 +373,7 @@ void printConnection(CircuitConnection& circ, QString prefix)
     else
         qDebug() << "ROOT ELEMENT";
     qDebug() << prefix + "ID =" << circ.id;
+    qDebug() << prefix + "name =" << circ.name;
     CircuitConnection::ConnectionType type = circ.type;
     QString typeStr;
     if (type == CircuitConnection::ConnectionType::parallel)
@@ -420,10 +444,25 @@ int main(int argc, char *argv[])
 
     // Setup DomDocument
     QDomDocument domDocument;
-    domDocument.setContent(&xmlFile);
+    QString errorMes;
+    int errorLine, errorColumn;
+    if (!domDocument.setContent(&xmlFile, &errorMes, &errorLine, &errorColumn))
+    {
+        printf("%s at %d in %d\n", errorMes.toStdString().c_str(), errorLine, errorColumn);
+        return 0;
+    }
     QDomElement rootElement = domDocument.documentElement();
 
-    parseConnectionChildren(connects, rootElement, NULL);
+    try
+    {
+        parseConnectionChildren(connects, rootElement, NULL);
+    }
+    catch(std::string error)
+    {
+        puts(error.c_str());
+        return 0;
+    }
+
     qDebug() << "Num of connections ="<< connects.count();
     qDebug() << "-----------------------------------------";
 
