@@ -28,9 +28,23 @@ class CircuitElement
     double value;
     ElemType type;
     public:
-    double calculateElemResistance(double frequency)
+    std::complex<double> calculateElemResistance(double frequency)
     {
-        return this->value;
+        std::complex<double> res;
+        switch (this->type) {
+        case ElemType::R:
+            res = {this->value, 0};
+            break;
+        case ElemType::L:
+            //jXl1
+            res = {0, this->value};
+            break;
+        case ElemType::C:
+            //-jXc1
+            res = {0, -this->value};
+            break;
+        }
+        return res;
     }
     static ElemType elemTypeFromStr(QString typeStr)
     {
@@ -66,11 +80,26 @@ class CircuitConnection
     QList<CircuitConnection*> children;
     CircuitConnection* parent = NULL;
     CircuitConnection* next = NULL;
-    double resistance = 0;
-    double voltage = -1;
-    double current = -1;
+    std::complex<double> resistance = 0;
+    std::complex<double> voltage = -1;
+    std::complex<double> current = -1;
+    bool isVoltageSet = false;
+    bool isCurrentSet = false;
     public:
-    double calculateResistance(double frequency)
+
+    void setVoltage(std::complex<double> newVolt)
+    {
+        this->voltage = newVolt;
+        isVoltageSet = true;
+    }
+
+    void setCurrent(std::complex<double> newCurr)
+    {
+        this->current = newCurr;
+        isCurrentSet = true;
+    }
+
+    std::complex<double> calculateResistance(double frequency)
     {
         // Считаем сопротивление равным нулю
         this->resistance = 0;
@@ -97,7 +126,7 @@ class CircuitConnection
         else if (this->type == ConnectionType::parallel)
         {
             // Находим сумму обратных значений сопротивления соединений-детей
-            double reverseSum = 0;
+            std::complex<double> reverseSum = 0;
             for (int i = 0; i < this->children.count(); i++)
             {
                 reverseSum += 1.0 / this->children[i]->calculateResistance(frequency);
@@ -110,26 +139,28 @@ class CircuitConnection
 
     double calculateCurrentAndVoltage()
     {
-        // Если есть соединение-родитель - наследуем значения тока или напряжения
+        // Если есть соединение-родитель - "наследуем" значения тока или напряжения
         if (this->parent != NULL)
         {
             // Наследуем силу тока если родитель - последовательное соединение
             if (this->parent->type == CircuitConnection::ConnectionType::sequentialComplex)
-                this->current = parent->current;
+                //this->current = parent->current;
+                this->setCurrent(parent->current);
             // Наследуем напряжение если родитель - параллельное соединение
             else if (this->parent->type == CircuitConnection::ConnectionType::parallel)
-                this->voltage = parent->voltage;
+                //this->voltage = parent->voltage;
+                this->setVoltage(this->parent->voltage);
         }
 
-        if (this->current == -1 && this->voltage == -1)
+        if (!this->isCurrentSet && !this->isVoltageSet)
         {
             qDebug() << "no voltage and current";
         }
 
         // Вычисляем оставшуюся неизвестную величину
-        if (this->current == -1)
+        if (!this->isCurrentSet)
             this->current = this->voltage / this->resistance;
-        else if (this->voltage == -1)
+        else if (!this->isVoltageSet)
             this->voltage = this->current * this->resistance;
 
 
@@ -328,9 +359,9 @@ void printConnection(CircuitConnection& circ, QString prefix)
     else if (type == CircuitConnection::ConnectionType::sequentialComplex)
         typeStr = "sequentialComplex";
     qDebug() << prefix + "Type =" << typeStr;
-    qDebug() << prefix + "Resistance =" << circ.resistance;
-    qDebug() << prefix + "Voltage =" << circ.voltage;
-    qDebug() << prefix + "Current =" << circ.current;
+    qDebug() << prefix + "Resistance =" << circ.resistance.real() << circ.resistance.imag();
+    qDebug() << prefix + "Voltage =" << circ.voltage.real() << circ.voltage.imag();
+    qDebug() << prefix + "Current =" << circ.current.real() << circ.current.imag();
     bool hasElements = circ.elements.count() != 0;
     if (hasElements)
     {
@@ -409,7 +440,7 @@ int main(int argc, char *argv[])
         CircuitConnection& currCirc = connects[*keyIter];
         if (currCirc.name.length() > 0)
         {
-            qDebug() << currCirc.name + " = " + QString::number(currCirc.current);
+            qDebug() << currCirc.name + " = " + QString::number(currCirc.current.real()) + " " + QString::number(currCirc.current.imag());
         }
         keyIter++;
     }
