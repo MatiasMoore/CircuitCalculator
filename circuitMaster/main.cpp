@@ -23,10 +23,10 @@ class CircuitElement
     CircuitElement(ElemType startType, double startValue)
     {
         this->type = startType;
-        this->value = startValue;
+        this->simpleResistance = startValue;
     }
     public:
-    double value;
+    double simpleResistance;
     ElemType type;
     public:
     std::complex<double> calculateElemResistance(double frequency)
@@ -34,13 +34,13 @@ class CircuitElement
         std::complex<double> res;
         switch (this->type) {
         case ElemType::R:
-            res = {this->value, 0};
+            res = {this->simpleResistance, 0};
             break;
         case ElemType::L:
-            res = {0, this->value};
+            res = {0, this->simpleResistance};
             break;
         case ElemType::C:
-            res = {0, -this->value};
+            res = {0, -this->simpleResistance};
             break;
         }
         return res;
@@ -136,7 +136,7 @@ class CircuitConnection
         return this->resistance;
     }
 
-    double calculateCurrentAndVoltage()
+    void calculateCurrentAndVoltage()
     {
         // Если есть соединение-родитель - "наследуем" значения тока или напряжения
         if (this->parent != NULL)
@@ -174,7 +174,6 @@ class CircuitConnection
             }
         }
 
-        return 0;
     }
 
 
@@ -305,7 +304,7 @@ void printElement(CircuitElement& elem, QString prefix)
     else if (type == CircuitElement::ElemType::C)
         typeStr = "C";
     qDebug() << prefix + "Type =" << typeStr;
-    qDebug() << prefix + "Value =" << elem.value;
+    qDebug() << prefix + "Value =" << elem.simpleResistance;
 }
 
 QString increasePrefix(QString& prefix)
@@ -394,8 +393,80 @@ void printConnection(CircuitConnection& circ, QString prefix)
     setConsoleColor(7);
 }
 
+bool readInputFromFile(QString inputPath, QMap<int, CircuitConnection>& circuitMap)
+{
+    QFile xmlFile(inputPath);
+    if (!xmlFile.exists() || !xmlFile.open(QFile::ReadOnly | QFile::Text)) {
+        qDebug() << "Input not found";
+        return 0;
+    }
+
+    // Setup DomDocument
+    QDomDocument domDocument;
+    QString errorMes;
+    int errorLine;
+    if (!domDocument.setContent(&xmlFile, &errorMes, &errorLine))
+    {
+        char buff[90];
+        sprintf(buff, "%s at line %d\n", errorMes.toStdString().c_str(), errorLine);
+        std::string errorStr = buff;
+        throw errorStr;
+    }
+
+    xmlFile.close();
+
+    QDomElement rootElement = domDocument.documentElement();
+
+    CircuitConnection::connectionFromDocElement(circuitMap, rootElement, NULL);
+
+    return 1;
+}
+
+QString complexToStr(std::complex<double> num)
+{
+    QString str;
+    double real = num.real();
+    double imag = num.imag();
+    if (imag == 0)
+        str = QString::number(real);
+    else
+    {
+        QString sign = imag > 0 ? "+" : "-";
+        str = QString("%1 %2 %3i").arg(QString::number(real), sign, QString::number(abs(imag)));
+    }
+    return str;
+}
+
+bool writeOutputToFile(QString outputPath, QMap<int, CircuitConnection>& circuitMap)
+{
+    QFile outFile(outputPath);
+    if (!outFile.open(QFile::WriteOnly | QFile::Text)) {
+        qDebug() << "Input not found";
+        return 0;
+    }
+
+    auto keyIter = circuitMap.keyBegin();
+
+    while (keyIter != circuitMap.keyEnd())
+    {
+        CircuitConnection& currCirc = circuitMap[*keyIter];
+        if (currCirc.name.length() > 0)
+        {
+            QString outLine;// = currCirc.name + " = " + QString::number(currCirc.current.real()) + " " + QString::number(currCirc.current.imag());
+            outLine = QString("%1 = %2\n").arg(currCirc.name, complexToStr(currCirc.current));
+            outFile.write(outLine.toStdString().c_str());
+        }
+        keyIter++;
+    }
+
+    outFile.close();
+}
+
 int main(int argc, char *argv[])
 {
+    //QString my_formatted_string = QString("%1/%3-%2.txt").arg("~", "Tom", "Jane");
+    //qDebug() << my_formatted_string;
+    //return 0;
     /*
     try
     {
@@ -408,36 +479,42 @@ int main(int argc, char *argv[])
     */
     QMap<int, CircuitConnection> connects;
 
-
     // Load the input file
     QString inputPath = "F:\\aeyy\\a_lab_projects\\KiNPO\\circuitMaster\\test.xml";
-    qDebug() << inputPath;
-    QFile xmlFile(inputPath);
-    if (!xmlFile.exists() || !xmlFile.open(QFile::ReadOnly | QFile::Text)) {
-        qDebug() << "Input not found";
+    try {
+        readInputFromFile(inputPath, connects);
+    } catch (std::string str) {
+        puts(str.c_str());
         return 0;
     }
 
-    // Setup DomDocument
-    QDomDocument domDocument;
-    QString errorMes;
-    int errorLine, errorColumn;
-    if (!domDocument.setContent(&xmlFile, &errorMes, &errorLine, &errorColumn))
-    {
-        printf("%s at %d in %d\n", errorMes.toStdString().c_str(), errorLine, errorColumn);
-        return 0;
-    }
-    QDomElement rootElement = domDocument.documentElement();
+    //qDebug() << inputPath;
+    //QFile xmlFile(inputPath);
+    //if (!xmlFile.exists() || !xmlFile.open(QFile::ReadOnly | QFile::Text)) {
+    //    qDebug() << "Input not found";
+    //    return 0;
+    //}
 
-    try
-    {
-        CircuitConnection::connectionFromDocElement(connects, rootElement, NULL);
-    }
-    catch(std::string error)
-    {
-        puts(error.c_str());
-        return 0;
-    }
+    //// Setup DomDocument
+    //QDomDocument domDocument;
+    //QString errorMes;
+    //int errorLine, errorColumn;
+    //if (!domDocument.setContent(&xmlFile, &errorMes, &errorLine, &errorColumn))
+    //{
+    //    printf("%s at %d in %d\n", errorMes.toStdString().c_str(), errorLine, errorColumn);
+    //    return 0;
+    //}
+    //QDomElement rootElement = domDocument.documentElement();
+
+    //try
+    //{
+    //    CircuitConnection::connectionFromDocElement(connects, rootElement, NULL);
+    //}
+    //catch(std::string error)
+    //{
+    //    puts(error.c_str());
+    //    return 0;
+    //}
 
     qDebug() << "Num of connections ="<< connects.count();
     qDebug() << "-----------------------------------------";
@@ -447,6 +524,8 @@ int main(int argc, char *argv[])
     connects[*connects.keyBegin()].calculateCurrentAndVoltage();
 
     printConnection(connects[*connects.keyBegin()], "  ");
+
+    writeOutputToFile("F:\\aeyy\\a_lab_projects\\KiNPO\\circuitMaster\\testOut.txt", connects);
 
     auto keyIter = connects.keyBegin();
 
