@@ -464,77 +464,37 @@ bool writeOutputToFile(QString outputPath, QMap<int, CircuitConnection>& circuit
 
 int main(int argc, char *argv[])
 {
-    //QString my_formatted_string = QString("%1/%3-%2.txt").arg("~", "Tom", "Jane");
-    //qDebug() << my_formatted_string;
-    //return 0;
-    /*
-    try
-    {
-        throw "Invalid index";
-    } catch (char const* exceptionStr)
-    {
-        printf("%s\n", exceptionStr);
-    }
-    return 0;
-    */
-    QMap<int, CircuitConnection> connects;
+    QMap<int, CircuitConnection> circuitMap;
 
     // Load the input file
     QString inputPath = "F:\\aeyy\\a_lab_projects\\KiNPO\\circuitMaster\\test.xml";
     try {
-        readInputFromFile(inputPath, connects);
+        readInputFromFile(inputPath, circuitMap);
     } catch (std::string str) {
         puts(str.c_str());
         return 0;
     }
 
-    //qDebug() << inputPath;
-    //QFile xmlFile(inputPath);
-    //if (!xmlFile.exists() || !xmlFile.open(QFile::ReadOnly | QFile::Text)) {
-    //    qDebug() << "Input not found";
-    //    return 0;
-    //}
 
-    //// Setup DomDocument
-    //QDomDocument domDocument;
-    //QString errorMes;
-    //int errorLine, errorColumn;
-    //if (!domDocument.setContent(&xmlFile, &errorMes, &errorLine, &errorColumn))
-    //{
-    //    printf("%s at %d in %d\n", errorMes.toStdString().c_str(), errorLine, errorColumn);
-    //    return 0;
-    //}
-    //QDomElement rootElement = domDocument.documentElement();
-
-    //try
-    //{
-    //    CircuitConnection::connectionFromDocElement(connects, rootElement, NULL);
-    //}
-    //catch(std::string error)
-    //{
-    //    puts(error.c_str());
-    //    return 0;
-    //}
-
-    qDebug() << "Num of connections ="<< connects.count();
+    qDebug() << "Num of connections ="<< circuitMap.count();
     qDebug() << "-----------------------------------------";
 
 
-    connects[*connects.keyBegin()].calculateResistance(1);
-    connects[*connects.keyBegin()].calculateCurrentAndVoltage();
+    circuitMap[*circuitMap.keyBegin()].calculateResistance(1);
+    circuitMap[*circuitMap.keyBegin()].calculateCurrentAndVoltage();
 
-    printConnection(connects[*connects.keyBegin()], "  ");
+    printConnection(circuitMap[*circuitMap.keyBegin()], "  ");
 
-    writeOutputToFile("F:\\aeyy\\a_lab_projects\\KiNPO\\circuitMaster\\testOut.txt", connects);
+    writeOutputToFile("F:\\aeyy\\a_lab_projects\\KiNPO\\circuitMaster\\testOut.txt", circuitMap);
 
-    auto keyIter = connects.keyBegin();
+    auto keyIter = circuitMap.keyBegin();
 
-    while (keyIter != connects.keyEnd())
+    while (keyIter != circuitMap.keyEnd())
     {
-        CircuitConnection& currCirc = connects[*keyIter];
+        CircuitConnection& currCirc = circuitMap[*keyIter];
         if (currCirc.name.length() > 0)
         {
-            qDebug() << currCirc.name + " = " + QString::number(currCirc.current.real()) + " " + QString::number(currCirc.current.imag());
+            qDebug() << currCirc.name + " = " + complexToStr(currCirc.current);
         }
         keyIter++;
     }
@@ -542,17 +502,3 @@ int main(int argc, char *argv[])
     return 0;
 
 }
-//complex< double > z( 1.0, 2.0 );     // z = 1 + 2i
-//cout << z              << std::endl; // Комплексное число выводится в виде вектора: (1, 2)
-//cout << std::conj( z ) << std::endl; // Комплексно-сопряженное: (1, -2)
-//cout << z.real()       << std::endl; // Действительная часть комплексного числа: 1
-//cout << z.imag()       << std::endl; // Мнимая часть комплексного числа: 2
-//printf("Hello world!\n");
-//scanf("%d", &z);
-
-//complex<double> a(2.0, 3.0);
-//complex<double> b(5.0, -7.0);
-//complex<double> res = a * b;
-//printf("a = %f | %f\n", a.real(), a.imag());
-//printf("b = %f | %f\n", b.real(), b.imag());
-//printf("res = %f | %f\n", res.real(), res.imag());
