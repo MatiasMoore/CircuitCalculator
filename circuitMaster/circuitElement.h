@@ -21,6 +21,10 @@ class CircuitElement
     ElemType type;
 
     public:
+    /*!
+    * \Рассчитывает сопротивление элемента цепи в виде комплексного числа
+    * \return - полученное сопротивление
+    */
     std::complex<double> calculateElemResistance(double frequency);
 
     static ElemType elemTypeFromStr(QString typeStr);

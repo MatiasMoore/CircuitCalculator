@@ -35,8 +35,16 @@ class CircuitConnection
 
     void setCurrent(std::complex<double> newCurr);
 
+    /*!
+    * \Рассчитывает сопротивление соединения цепи в виде комплексного числа
+    * \return - полученное сопротивление
+    */
     std::complex<double> calculateResistance(double frequency);
 
+    /*!
+    * \Рассчитывает силу тока и напряжение в виде комплексного числа для соединеия и всех его вложенных соединений
+    * \return - результаты записываются в объекты класса
+    */
     void calculateCurrentAndVoltage();
 
     bool addElement(CircuitElement newElem);
@@ -45,6 +53,13 @@ class CircuitConnection
 
     static ConnectionType strToConnectionType(QString strType);
 
+    /*!
+    * \Получить объекты класса из корневого элемента документа
+    * \param[in|out] map - контейнер для записи соединений
+    * \param[in] node - тэг элемента по кторому создается запись
+    * \param[in] parentPtr - указатель на соединение-родителя
+    * \return - указатель на созданный в map объект класса
+    */
     static CircuitConnection* connectionFromDocElement(QMap<int, CircuitConnection>& map, QDomNode node, CircuitConnection* parentPtr);
 
 };
