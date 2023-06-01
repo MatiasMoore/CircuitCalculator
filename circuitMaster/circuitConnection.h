@@ -39,7 +39,7 @@ class CircuitConnection
     * \Рассчитывает сопротивление соединения цепи в виде комплексного числа
     * \return - полученное сопротивление
     */
-    std::complex<double> calculateResistance(double frequency);
+    std::complex<double> calculateResistance();
 
     /*!
     * \Рассчитывает силу тока и напряжение в виде комплексного числа для соединеия и всех его вложенных соединений

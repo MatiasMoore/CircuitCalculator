@@ -199,7 +199,7 @@ int main(int argc, char *argv[])
     qDebug() << "-----------------------------------------";
 
 
-    circuitMap[*circuitMap.keyBegin()].calculateResistance(1);
+    circuitMap[*circuitMap.keyBegin()].calculateResistance();
     circuitMap[*circuitMap.keyBegin()].calculateCurrentAndVoltage();
 
     printConnection(circuitMap[*circuitMap.keyBegin()], "  ");

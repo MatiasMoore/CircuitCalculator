@@ -22,7 +22,7 @@ void CircuitConnection::setCurrent(std::complex<double> newCurr)
     isCurrentSet = true;
 }
 
-std::complex<double> CircuitConnection::calculateResistance(double frequency)
+std::complex<double> CircuitConnection::calculateResistance()
 {
     // Считаем сопротивление равным нулю
     this->resistance = 0;
@@ -33,7 +33,7 @@ std::complex<double> CircuitConnection::calculateResistance(double frequency)
         // Сопротивление цепи равно сумме сопротивлений её элементов
         for (int i = 0; i < this->elements.count(); i++)
         {
-            this->resistance += this->elements[i].calculateElemResistance(frequency);
+            this->resistance += this->elements[i].calculateElemResistance();
         }
     }
     // Для сложного последовательного соединения
@@ -42,7 +42,7 @@ std::complex<double> CircuitConnection::calculateResistance(double frequency)
         // Сопротивление цепи равно сумме сопротивлений её соединений-детей
         for (int i = 0; i < this->children.count(); i++)
         {
-            this->resistance += this->children[i]->calculateResistance(frequency);
+            this->resistance += this->children[i]->calculateResistance();
         }
     }
     // Для параллельного соединения
@@ -52,7 +52,7 @@ std::complex<double> CircuitConnection::calculateResistance(double frequency)
         std::complex<double> reverseSum = 0;
         for (int i = 0; i < this->children.count(); i++)
         {
-            reverseSum += 1.0 / this->children[i]->calculateResistance(frequency);
+            reverseSum += 1.0 / this->children[i]->calculateResistance();
         }
         // Находим сопротивление параллельной цепи
         this->resistance = 1.0 / reverseSum;

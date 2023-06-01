@@ -6,7 +6,7 @@ CircuitElement::CircuitElement(ElemType startType, double startValue)
     this->simpleResistance = startValue;
 }
 
-std::complex<double> CircuitElement::calculateElemResistance(double frequency)
+std::complex<double> CircuitElement::calculateElemResistance()
 {
     std::complex<double> res;
     switch (this->type) {
