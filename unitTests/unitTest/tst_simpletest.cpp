@@ -21,6 +21,17 @@ public:
 private slots:
     void initTestCase();
     void cleanupTestCase();
+    //calculateElemResistance
+    void invalidResistance();
+
+    void intValueR();
+    void intValueL();
+    void intValueC();
+
+    void floatValueR();
+    void floatValueL();
+    void floatValueC();
+
     //calculateResistance
     void sequential_R();
     void sequential_L();
@@ -48,7 +59,9 @@ private slots:
 #define COMPARE_COMPLEX(expected, actual, epsilon) \
 double realDelta = abs(expectedRes.real() - actualRes.real()); \
 double imagDelta = abs(expectedRes.imag() - actualRes.imag()); \
-QVERIFY2(realDelta < epsilon && imagDelta < epsilon, "Values do not match");
+char message[500]; \
+sprintf(message, "Expected = %s Got = %s", complexToStr(expected).toStdString().c_str(), complexToStr(actual).toStdString().c_str()); \
+QVERIFY2(realDelta < epsilon && imagDelta < epsilon, message);
 
 simpleTest::simpleTest()
 {
@@ -68,6 +81,77 @@ void simpleTest::initTestCase()
 void simpleTest::cleanupTestCase()
 {
 
+}
+
+//calculateElemResistance
+void simpleTest::invalidResistance()
+{
+    CircuitElement elem(CircuitElement::ElemType::R, -5);
+
+    std::complex<double> actualRes = elem.calculateElemResistance();
+    std::complex<double> expectedRes(5, 0);
+
+    COMPARE_COMPLEX(expectedRes, actualRes, 0.001);
+}
+
+void simpleTest::intValueR()
+{
+    CircuitElement elem(CircuitElement::ElemType::R, 5);
+
+    std::complex<double> actualRes = elem.calculateElemResistance();
+    std::complex<double> expectedRes(5, 0);
+
+    COMPARE_COMPLEX(expectedRes, actualRes, 0.001);
+}
+
+void simpleTest::intValueL()
+{
+    CircuitElement elem(CircuitElement::ElemType::L, 5);
+
+    std::complex<double> actualRes = elem.calculateElemResistance();
+    std::complex<double> expectedRes(0, 5);
+
+    COMPARE_COMPLEX(expectedRes, actualRes, 0.001);
+}
+
+void simpleTest::intValueC()
+{
+    CircuitElement elem(CircuitElement::ElemType::C, 5);
+
+    std::complex<double> actualRes = elem.calculateElemResistance();
+    std::complex<double> expectedRes(0, -5);
+
+    COMPARE_COMPLEX(expectedRes, actualRes, 0.001);
+}
+
+void simpleTest::floatValueR()
+{
+    CircuitElement elem(CircuitElement::ElemType::R, 5.5);
+
+    std::complex<double> actualRes = elem.calculateElemResistance();
+    std::complex<double> expectedRes(5.5, 0);
+
+    COMPARE_COMPLEX(expectedRes, actualRes, 0.001);
+}
+
+void simpleTest::floatValueL()
+{
+    CircuitElement elem(CircuitElement::ElemType::L, 5.5);
+
+    std::complex<double> actualRes = elem.calculateElemResistance();
+    std::complex<double> expectedRes(0, 5.5);
+
+    COMPARE_COMPLEX(expectedRes, actualRes, 0.001);
+}
+
+void simpleTest::floatValueC()
+{
+    CircuitElement elem(CircuitElement::ElemType::C, 5.5);
+
+    std::complex<double> actualRes = elem.calculateElemResistance();
+    std::complex<double> expectedRes(0, -5.5);
+
+    COMPARE_COMPLEX(expectedRes, actualRes, 0.001);
 }
 
 //calculateResistance
