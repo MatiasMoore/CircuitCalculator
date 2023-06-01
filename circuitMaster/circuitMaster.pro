@@ -11,6 +11,7 @@ CONFIG -= app_bundle
 SOURCES += \
         circuitConnection.cpp \
         circuitElement.cpp \
+        ioFunctions.cpp \
         main.cpp
 
 # Default rules for deployment.
@@ -20,4 +21,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 HEADERS += \
     circuitConnection.h \
-    circuitElement.h
+    circuitElement.h \
+    ioFunctions.h

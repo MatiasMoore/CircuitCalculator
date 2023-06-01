@@ -10,6 +10,7 @@
 #include <windows.h>
 #include "circuitElement.h"
 #include "circuitConnection.h"
+#include "ioFunctions.h"
 
 
 void printElement(CircuitElement& elem, QString prefix)
@@ -139,21 +140,6 @@ bool readInputFromFile(QString inputPath, QMap<int, CircuitConnection>& circuitM
     CircuitConnection::connectionFromDocElement(circuitMap, rootElement, NULL);
 
     return 1;
-}
-
-QString complexToStr(std::complex<double> num)
-{
-    QString str;
-    double real = num.real();
-    double imag = num.imag();
-    if (imag == 0)
-        str = QString::number(real);
-    else
-    {
-        QString sign = imag > 0 ? "+" : "-";
-        str = QString("%1 %2 %3i").arg(QString::number(real), sign, QString::number(abs(imag)));
-    }
-    return str;
 }
 
 bool writeOutputToFile(QString outputPath, QMap<int, CircuitConnection>& circuitMap)
