@@ -18,6 +18,8 @@ class CircuitConnection
 
     CircuitConnection(ConnectionType startType);
 
+    CircuitConnection(ConnectionType startType, CircuitElement startElem);
+
     public:
     QString name;
     int id;

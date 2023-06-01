@@ -10,6 +10,12 @@ CircuitConnection::CircuitConnection(ConnectionType startType)
     this->type = startType;
 }
 
+CircuitConnection::CircuitConnection(ConnectionType startType, CircuitElement startElem)
+{
+    this->type = startType;
+    this->addElement(startElem);
+}
+
 void CircuitConnection::setVoltage(std::complex<double> newVolt)
 {
     this->voltage = newVolt;
