@@ -112,7 +112,6 @@ void CircuitConnection::calculateCurrentAndVoltage()
 
 }
 
-
 void CircuitConnection::addElement(CircuitElement newElem)
 {
     this->elements.append(newElem);
@@ -191,9 +190,7 @@ CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<int, Circuit
     {
         if (children.isEmpty())
         {
-            std::string message;
-            message.append("No elements inside connection at line ").append(std::to_string(element.lineNumber()));
-            throw message;
+            throw QString("Отсутсвуют элементы соединения на строке %1").arg(QString::number(element.lineNumber()));
         }
         // Добавляем все элементы в соединение
         for(int i = 0; i < children.count(); i++)
@@ -204,16 +201,12 @@ CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<int, Circuit
                 QDomElement elem = currElem.firstChildElement("type");
                 if (elem.isNull())
                 {
-                    std::string message;
-                    message.append("No element type at line ").append(std::to_string(currElem.lineNumber()));
-                    throw message;
+                    throw QString("Отсутсвует тип элемента на строке %1").arg(QString::number(currElem.lineNumber()));
                 }
                 CircuitElement::ElemType type = CircuitElement::elemTypeFromStr(elem.text());
                 if (type == CircuitElement::ElemType::invalid)
                 {
-                    std::string message;
-                    message.append("Invalid elem type at line ").append(std::to_string(currElem.lineNumber()));
-                    throw message;
+                    throw QString("Неверный тип элемента на строке %1").arg(QString::number(currElem.lineNumber()));
                 }
                 double value = currElem.firstChildElement("value").text().toDouble();
                 circuit->addElement(CircuitElement(type, value));
