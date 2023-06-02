@@ -136,7 +136,7 @@ CircuitConnection::ConnectionType CircuitConnection::strToConnectionType(QString
     return type;
 }
 
-CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<int, CircuitConnection>& map, QDomNode node, CircuitConnection* parentPtr)
+CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<int, CircuitConnection>& map, QDomNode node)
 {
     QDomElement element = node.toElement();
     QString nodeType = element.tagName();
@@ -149,8 +149,7 @@ CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<int, Circuit
     int newId = map.keys().count() + 1;
     newCircuit.id = newId;
 
-    // Его родителем является объект, который рекурсивно вызвал функцию
-    newCircuit.parent = parentPtr;
+    // Получаем название соединения
     newCircuit.name = element.attribute("name", "");
 
     // Получаем значение напряжения, если указано
@@ -180,7 +179,7 @@ CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<int, Circuit
         // Рекурсивно обрабатываем каждого ребёнка текущей цепи
         for(int i = 0; i < children.count(); i++)
         {
-            CircuitConnection* currChildPtr = connectionFromDocElement(map, children.at(i), circuit);
+            CircuitConnection* currChildPtr = connectionFromDocElement(map, children.at(i));
             if (currChildPtr != NULL)
             {
                 circuit->addChild(currChildPtr);

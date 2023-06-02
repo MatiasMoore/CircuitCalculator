@@ -39,7 +39,7 @@ bool readInputFromFile(QString inputPath, QMap<int, CircuitConnection>& circuitM
 
     QDomElement rootElement = domDocument.documentElement();
 
-    CircuitConnection::connectionFromDocElement(circuitMap, rootElement, NULL);
+    CircuitConnection::connectionFromDocElement(circuitMap, rootElement);
 
     return 1;
 }
