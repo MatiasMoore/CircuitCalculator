@@ -57,3 +57,4 @@ circuitMaster/testOut.txt
 *.idx
 *.idx.*
 *.stash
+*.exe
