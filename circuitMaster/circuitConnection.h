@@ -20,6 +20,8 @@ class CircuitConnection
 
     CircuitConnection(ConnectionType startType, CircuitElement startElem);
 
+    CircuitConnection(ConnectionType startType, std::complex<double> startResistance);
+
     public:
     QString name;
     int id;

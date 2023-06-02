@@ -16,6 +16,12 @@ CircuitConnection::CircuitConnection(ConnectionType startType, CircuitElement st
     this->addElement(startElem);
 }
 
+CircuitConnection::CircuitConnection(ConnectionType startType, std::complex<double> startResistance)
+{
+    this->type = startType;
+    this->resistance = startResistance;
+}
+
 void CircuitConnection::setVoltage(std::complex<double> newVolt)
 {
     this->voltage = newVolt;
@@ -83,7 +89,7 @@ void CircuitConnection::calculateCurrentAndVoltage()
 
     if (!this->isCurrentSet && !this->isVoltageSet)
     {
-        qDebug() << "no voltage and current in" << this->id;
+        throw QString("Unknown voltage and current without parent element");
     }
 
     // Вычисляем оставшуюся неизвестную величину
@@ -115,6 +121,7 @@ bool CircuitConnection::addElement(CircuitElement newElem)
 bool CircuitConnection::addChild(CircuitConnection* newChildCircuit)
 {
     this->children.append(newChildCircuit);
+    newChildCircuit->parent = this;
 }
 
 CircuitConnection::ConnectionType CircuitConnection::strToConnectionType(QString strType)

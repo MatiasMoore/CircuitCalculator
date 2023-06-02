@@ -54,15 +54,44 @@ private slots:
     void complexTest1();
     void complexTest2();
 
+    //calculateCurrentAndVoltage
+    void unknownResistance();
+    void onlyResistanceWithNoParent();
+
+    void knownVoltage();
+    void knownCurrent();
+
+    void knownCurrentFrom_SeqParent();
+    void knownVoltageFrom_ParParent();
+
+    void parAndSeq_ParParent();
+    void parAndPar_ParParent();
+    void seqAndSeq_ParParent();
+
+    void parAndSeq_SeqParent();
+    void parAndPar_SeqParent();
+    void seqAndSeq_SeqParent();
+
+    void complexTest_1();
 };
 
+void COMPARE_COMPLEX(std::complex<double> expected, std::complex<double> actual, double epsilon)
+{
+    double realDelta = abs(expected.real() - actual.real());
+    double imagDelta = abs(expected.imag() - actual.imag());
+    char message[500];
+    sprintf(message, "Expected = %s Got = %s", complexToStr(expected).toStdString().c_str(), complexToStr(actual).toStdString().c_str());
+    QVERIFY2(realDelta < epsilon && imagDelta < epsilon, message);
+}
+
+/*
 #define COMPARE_COMPLEX(expected, actual, epsilon) \
-double realDelta = abs(expectedRes.real() - actualRes.real()); \
-double imagDelta = abs(expectedRes.imag() - actualRes.imag()); \
+double realDelta = abs(expected.real() - actual.real()); \
+double imagDelta = abs(expected.imag() - actual.imag()); \
 char message[500]; \
 sprintf(message, "Expected = %s Got = %s", complexToStr(expected).toStdString().c_str(), complexToStr(actual).toStdString().c_str()); \
 QVERIFY2(realDelta < epsilon && imagDelta < epsilon, message);
-
+*/
 simpleTest::simpleTest()
 {
 
@@ -88,10 +117,16 @@ void simpleTest::invalidResistance()
 {
     CircuitElement elem(CircuitElement::ElemType::R, -5);
 
-    std::complex<double> actualRes = elem.calculateElemResistance();
-    std::complex<double> expectedRes(5, 0);
+    try {
+        std::complex<double> actualRes = elem.calculateElemResistance();
+        std::complex<double> expectedRes(5, 0);
+        QVERIFY2(false, "No exception is thrown");
+    } catch (...)
+    {
+        QVERIFY(true);
+    }
 
-    COMPARE_COMPLEX(expectedRes, actualRes, 0.001);
+//    COMPARE_COMPLEX(expectedRes, actualRes, 0.001);
 }
 
 void simpleTest::intValueR()
@@ -555,6 +590,349 @@ void simpleTest::complexTest2()
     std::complex<double> expectedRes(1.951, 0.098);
 
     COMPARE_COMPLEX(expectedRes, actualRes, 0.001);
+
+}
+
+//calculateCurrentAndVoltage
+void simpleTest::unknownResistance()
+{
+    CircuitConnection connection(CircuitConnection::ConnectionType::sequential);
+    try {
+        connection.calculateCurrentAndVoltage();
+        QVERIFY2(false, "No exception is thrown");
+    } catch (...)
+    {
+        QVERIFY(true);
+    }
+}
+
+void simpleTest::onlyResistanceWithNoParent()
+{
+    CircuitConnection connection(CircuitConnection::ConnectionType::sequential, CircuitElement(CircuitElement::ElemType::R, 5));
+    connection.calculateResistance();
+    try {
+        connection.calculateCurrentAndVoltage();
+        QVERIFY2(false, "No exception is thrown");
+    } catch (...)
+    {
+        QVERIFY(true);
+    }
+}
+
+void simpleTest::knownVoltage()
+{
+    CircuitConnection connection(CircuitConnection::ConnectionType::sequential, CircuitElement(CircuitElement::ElemType::R, 10));
+    connection.calculateResistance();
+    connection.setVoltage(100);
+
+    connection.calculateCurrentAndVoltage();
+
+    std::complex<double> actualCurrent = connection.current;
+    std::complex<double> expectedCurrent(10, 0);
+
+    COMPARE_COMPLEX(expectedCurrent, actualCurrent, 0.001);
+}
+
+void simpleTest::knownCurrent()
+{
+    CircuitConnection connection(CircuitConnection::ConnectionType::sequential, CircuitElement(CircuitElement::ElemType::R, 10));
+    connection.calculateResistance();
+    connection.setCurrent(10);
+
+    connection.calculateCurrentAndVoltage();
+
+    std::complex<double> actualVoltage = connection.voltage;
+    std::complex<double> expectedVoltage(100, 0);
+
+    COMPARE_COMPLEX(expectedVoltage, actualVoltage, 0.001);
+}
+
+void simpleTest::knownCurrentFrom_SeqParent()
+{
+    CircuitConnection parent(CircuitConnection::ConnectionType::sequentialComplex);
+    parent.setCurrent(10);
+
+    CircuitConnection connection(CircuitConnection::ConnectionType::sequential, CircuitElement(CircuitElement::ElemType::R, 10));
+    connection.parent = &parent;
+    connection.calculateResistance();
+
+    connection.calculateCurrentAndVoltage();
+
+    std::complex<double> actualVoltage = connection.voltage;
+    std::complex<double> expectedVoltage(100, 0);
+
+    COMPARE_COMPLEX(expectedVoltage, actualVoltage, 0.001);
+
+    std::complex<double> actualCurrent = connection.current;
+    std::complex<double> expectedCurrent(10, 0);
+
+    COMPARE_COMPLEX(expectedCurrent, actualCurrent, 0.001);
+}
+
+void simpleTest::knownVoltageFrom_ParParent()
+{
+    CircuitConnection parent(CircuitConnection::ConnectionType::parallel);
+    parent.setVoltage(100);
+
+    CircuitConnection connection(CircuitConnection::ConnectionType::sequential, CircuitElement(CircuitElement::ElemType::R, 10));
+    connection.parent = &parent;
+    connection.calculateResistance();
+
+    connection.calculateCurrentAndVoltage();
+
+    std::complex<double> actualVoltage = connection.voltage;
+    std::complex<double> expectedVoltage(100, 0);
+
+    COMPARE_COMPLEX(expectedVoltage, actualVoltage, 0.001);
+
+    std::complex<double> actualCurrent = connection.current;
+    std::complex<double> expectedCurrent(10, 0);
+
+    COMPARE_COMPLEX(expectedCurrent, actualCurrent, 0.001);
+}
+
+void simpleTest::parAndSeq_ParParent()
+{
+    CircuitConnection par(CircuitConnection::ConnectionType::parallel, std::complex<double>(5, 0));
+    CircuitConnection seq(CircuitConnection::ConnectionType::sequential, std::complex<double>(15, 0));
+
+    CircuitConnection parent(CircuitConnection::ConnectionType::parallel, std::complex<double>(3.75, 0));
+    parent.setVoltage(100);
+    parent.addChild(&par);
+    parent.addChild(&seq);
+
+    parent.calculateCurrentAndVoltage();
+
+    std::complex<double> actualSeqVoltage = seq.voltage;
+    std::complex<double> expectedSeqVoltage(100, 0);
+    COMPARE_COMPLEX(expectedSeqVoltage, actualSeqVoltage, 0.001);
+
+    std::complex<double> actualSeqCurrent = seq.current;
+    std::complex<double> expectedSeqCurrent(6.666, 0);
+    COMPARE_COMPLEX(expectedSeqCurrent, actualSeqCurrent, 0.001);
+
+    std::complex<double> actualParVoltage = par.voltage;
+    std::complex<double> expectedParVoltage(100, 0);
+    COMPARE_COMPLEX(expectedParVoltage, actualParVoltage, 0.001);
+
+    std::complex<double> actualParCurrent = par.current;
+    std::complex<double> expectedParCurrent(20, 0);
+    COMPARE_COMPLEX(expectedParCurrent, actualParCurrent, 0.001);
+
+    std::complex<double> actualParentCurrent = parent.current;
+    std::complex<double> expectedParentCurrent(26.666, 0);
+    COMPARE_COMPLEX(expectedParentCurrent, actualParentCurrent, 0.001);
+}
+
+void simpleTest::parAndPar_ParParent()
+{
+    CircuitConnection par1(CircuitConnection::ConnectionType::parallel, std::complex<double>(5, 0));
+    CircuitConnection par2(CircuitConnection::ConnectionType::parallel, std::complex<double>(15, 0));
+
+    CircuitConnection parent(CircuitConnection::ConnectionType::parallel, std::complex<double>(3.75, 0));
+    parent.setVoltage(100);
+    parent.addChild(&par1);
+    parent.addChild(&par2);
+
+    parent.calculateCurrentAndVoltage();
+
+    std::complex<double> actualPar1Voltage = par1.voltage;
+    std::complex<double> expectedPar1Voltage(100, 0);
+    COMPARE_COMPLEX(expectedPar1Voltage, actualPar1Voltage, 0.001);
+
+    std::complex<double> actualPar1Current = par1.current;
+    std::complex<double> expectedPar1Current(20, 0);
+    COMPARE_COMPLEX(expectedPar1Current, actualPar1Current, 0.001);
+
+    std::complex<double> actualPar2Voltage = par2.voltage;
+    std::complex<double> expectedPar2Voltage(100, 0);
+    COMPARE_COMPLEX(expectedPar2Voltage, actualPar2Voltage, 0.001);
+
+    std::complex<double> actualPar2Current = par2.current;
+    std::complex<double> expectedPar2Current(6.666, 0);
+    COMPARE_COMPLEX(expectedPar2Current, actualPar2Current, 0.001);
+
+    std::complex<double> actualParentCurrent = parent.current;
+    std::complex<double> expectedParentCurrent(26.666, 0);
+    COMPARE_COMPLEX(expectedParentCurrent, actualParentCurrent, 0.001);
+}
+
+void simpleTest::seqAndSeq_ParParent()
+{
+    CircuitConnection seq1(CircuitConnection::ConnectionType::sequential, std::complex<double>(5, 0));
+    CircuitConnection seq2(CircuitConnection::ConnectionType::sequential, std::complex<double>(15, 0));
+
+    CircuitConnection parent(CircuitConnection::ConnectionType::parallel, std::complex<double>(3.75, 0));
+    parent.setVoltage(100);
+    parent.addChild(&seq1);
+    parent.addChild(&seq2);
+
+    parent.calculateCurrentAndVoltage();
+
+    std::complex<double> actualSeq1Voltage = seq1.voltage;
+    std::complex<double> expectedSeq1Voltage(100, 0);
+    COMPARE_COMPLEX(expectedSeq1Voltage, actualSeq1Voltage, 0.001);
+
+    std::complex<double> actualSeq1Current = seq1.current;
+    std::complex<double> expectedSeq1Current(20, 0);
+    COMPARE_COMPLEX(expectedSeq1Current, actualSeq1Current, 0.001);
+
+    std::complex<double> actualSeq2Voltage = seq2.voltage;
+    std::complex<double> expectedSeq2Voltage(100, 0);
+    COMPARE_COMPLEX(expectedSeq2Voltage, actualSeq2Voltage, 0.001);
+
+    std::complex<double> actualSeq2Current = seq2.current;
+    std::complex<double> expectedSeq2Current(6.666, 0);
+    COMPARE_COMPLEX(expectedSeq2Current, actualSeq2Current, 0.001);
+
+    std::complex<double> actualParentCurrent = parent.current;
+    std::complex<double> expectedParentCurrent(26.666, 0);
+    COMPARE_COMPLEX(expectedParentCurrent, actualParentCurrent, 0.001);
+}
+
+void simpleTest::parAndSeq_SeqParent()
+{
+    CircuitConnection par(CircuitConnection::ConnectionType::parallel, std::complex<double>(5, 0));
+    CircuitConnection seq(CircuitConnection::ConnectionType::sequential, std::complex<double>(15, 0));
+
+    CircuitConnection parent(CircuitConnection::ConnectionType::sequentialComplex, std::complex<double>(20, 0));
+    parent.setVoltage(100);
+    parent.addChild(&par);
+    parent.addChild(&seq);
+
+    parent.calculateCurrentAndVoltage();
+
+    std::complex<double> actualSeqVoltage = seq.voltage;
+    std::complex<double> expectedSeqVoltage(75, 0);
+    COMPARE_COMPLEX(expectedSeqVoltage, actualSeqVoltage, 0.001);
+
+    std::complex<double> actualSeqCurrent = seq.current;
+    std::complex<double> expectedSeqCurrent(5, 0);
+    COMPARE_COMPLEX(expectedSeqCurrent, actualSeqCurrent, 0.001);
+
+    std::complex<double> actualParVoltage = par.voltage;
+    std::complex<double> expectedParVoltage(25, 0);
+    COMPARE_COMPLEX(expectedParVoltage, actualParVoltage, 0.001);
+
+    std::complex<double> actualParCurrent = par.current;
+    std::complex<double> expectedParCurrent(5, 0);
+    COMPARE_COMPLEX(expectedParCurrent, actualParCurrent, 0.001);
+
+    std::complex<double> actualParentCurrent = parent.current;
+    std::complex<double> expectedParentCurrent(5, 0);
+    COMPARE_COMPLEX(expectedParentCurrent, actualParentCurrent, 0.001);
+}
+
+void simpleTest::parAndPar_SeqParent()
+{
+    CircuitConnection par1(CircuitConnection::ConnectionType::parallel, std::complex<double>(5, 0));
+    CircuitConnection par2(CircuitConnection::ConnectionType::parallel, std::complex<double>(15, 0));
+
+    CircuitConnection parent(CircuitConnection::ConnectionType::sequentialComplex, std::complex<double>(20, 0));
+    parent.setVoltage(100);
+    parent.addChild(&par1);
+    parent.addChild(&par2);
+
+    parent.calculateCurrentAndVoltage();
+
+    std::complex<double> actualPar1Voltage = par1.voltage;
+    std::complex<double> expectedPar1Voltage(25, 0);
+    COMPARE_COMPLEX(expectedPar1Voltage, actualPar1Voltage, 0.001);
+
+    std::complex<double> actualPar1Current = par1.current;
+    std::complex<double> expectedPar1Current(5, 0);
+    COMPARE_COMPLEX(expectedPar1Current, actualPar1Current, 0.001);
+
+    std::complex<double> actualPar2Voltage = par2.voltage;
+    std::complex<double> expectedPar2Voltage(75, 0);
+    COMPARE_COMPLEX(expectedPar2Voltage, actualPar2Voltage, 0.001);
+
+    std::complex<double> actualPar2Current = par2.current;
+    std::complex<double> expectedPar2Current(5, 0);
+    COMPARE_COMPLEX(expectedPar2Current, actualPar2Current, 0.001);
+
+    std::complex<double> actualParentCurrent = parent.current;
+    std::complex<double> expectedParentCurrent(5, 0);
+    COMPARE_COMPLEX(expectedParentCurrent, actualParentCurrent, 0.001);
+}
+
+void simpleTest::seqAndSeq_SeqParent()
+{
+    CircuitConnection seq1(CircuitConnection::ConnectionType::sequential, std::complex<double>(5, 0));
+    CircuitConnection seq2(CircuitConnection::ConnectionType::sequential, std::complex<double>(15, 0));
+
+    CircuitConnection parent(CircuitConnection::ConnectionType::sequentialComplex, std::complex<double>(20, 0));
+    parent.setVoltage(100);
+    parent.addChild(&seq1);
+    parent.addChild(&seq2);
+
+    parent.calculateCurrentAndVoltage();
+
+    std::complex<double> actualSeq1Voltage = seq1.voltage;
+    std::complex<double> expectedSeq1Voltage(25, 0);
+    COMPARE_COMPLEX(expectedSeq1Voltage, actualSeq1Voltage, 0.001);
+
+    std::complex<double> actualSeq1Current = seq1.current;
+    std::complex<double> expectedSeq1Current(5, 0);
+    COMPARE_COMPLEX(expectedSeq1Current, actualSeq1Current, 0.001);
+
+    std::complex<double> actualSeq2Voltage = seq2.voltage;
+    std::complex<double> expectedSeq2Voltage(75, 0);
+    COMPARE_COMPLEX(expectedSeq2Voltage, actualSeq2Voltage, 0.001);
+
+    std::complex<double> actualSeq2Current = seq2.current;
+    std::complex<double> expectedSeq2Current(5, 0);
+    COMPARE_COMPLEX(expectedSeq2Current, actualSeq2Current, 0.001);
+
+    std::complex<double> actualParentCurrent = parent.current;
+    std::complex<double> expectedParentCurrent(5, 0);
+    COMPARE_COMPLEX(expectedParentCurrent, actualParentCurrent, 0.001);
+}
+
+void simpleTest::complexTest_1()
+{
+    CircuitConnection par1(CircuitConnection::ConnectionType::parallel, std::complex<double>(5, 0));
+
+    CircuitConnection par2(CircuitConnection::ConnectionType::parallel, std::complex<double>(15, 0));
+    CircuitConnection seq1(CircuitConnection::ConnectionType::sequential, std::complex<double>(20, 0));
+    CircuitConnection parComplex(CircuitConnection::ConnectionType::parallel, std::complex<double>(8.571, 0));
+    parComplex.addChild(&par2);
+    parComplex.addChild(&seq1);
+
+    CircuitConnection parent(CircuitConnection::ConnectionType::parallel, std::complex<double>(3.16, 0));
+    parent.setVoltage(100);
+    parent.addChild(&par1);
+    parent.addChild(&parComplex);
+
+    parent.calculateCurrentAndVoltage();
+
+    std::complex<double> actualPar1Voltage = par1.voltage;
+    std::complex<double> expectedPar1Voltage(100, 0);
+    COMPARE_COMPLEX(expectedPar1Voltage, actualPar1Voltage, 0.001);
+
+    std::complex<double> actualPar1Current = par1.current;
+    std::complex<double> expectedPar1Current(20, 0);
+    COMPARE_COMPLEX(expectedPar1Current, actualPar1Current, 0.001);
+
+    std::complex<double> actualPar2Voltage = par2.voltage;
+    std::complex<double> expectedPar2Voltage(100, 0);
+    COMPARE_COMPLEX(expectedPar2Voltage, actualPar2Voltage, 0.001);
+
+    std::complex<double> actualPar2Current = par2.current;
+    std::complex<double> expectedPar2Current(6.666, 0);
+    COMPARE_COMPLEX(expectedPar2Current, actualPar2Current, 0.001);
+
+    std::complex<double> actualSeq1Voltage = seq1.voltage;
+    std::complex<double> expectedSeq1Voltage(100, 0);
+    COMPARE_COMPLEX(expectedSeq1Voltage, actualSeq1Voltage, 0.001);
+
+    std::complex<double> actualSeq1Current = seq1.current;
+    std::complex<double> expectedSeq1Current(5, 0);
+    COMPARE_COMPLEX(expectedSeq1Current, actualSeq1Current, 0.001);
+
+    std::complex<double> actualParentCurrent = parent.current;
+    std::complex<double> expectedParentCurrent(31.645, 0);
+    COMPARE_COMPLEX(expectedParentCurrent, actualParentCurrent, 0.001);
 
 }
 

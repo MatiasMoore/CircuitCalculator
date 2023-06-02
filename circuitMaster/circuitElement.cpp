@@ -8,6 +8,8 @@ CircuitElement::CircuitElement(ElemType startType, double startValue)
 
 std::complex<double> CircuitElement::calculateElemResistance()
 {
+    if (this->simpleResistance <= 0)
+        throw QString("Invalid resistance value");
     std::complex<double> res;
     switch (this->type) {
     case ElemType::R:
