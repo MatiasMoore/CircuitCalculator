@@ -15,11 +15,11 @@ QString complexToStr(std::complex<double> num)
     return str;
 }
 
-void readInputFromFile(QString inputPath, QMap<int, CircuitConnection>& circuitMap)
+void readInputFromFile(QString inputPath, QMap<QString, CircuitConnection>& circuitMap)
 {
     QFile xmlFile(inputPath);
     if (!xmlFile.exists() || !xmlFile.open(QFile::ReadOnly | QFile::Text)) {
-        throw QString("Input not found");
+        throw QString("Неверно указан файл для входных данных. Возможно указанного расположения не существует или нет прав на запись.");
     }
 
     // Setup DomDocument
@@ -41,11 +41,11 @@ void readInputFromFile(QString inputPath, QMap<int, CircuitConnection>& circuitM
     CircuitConnection::connectionFromDocElement(circuitMap, rootElement);
 }
 
-void writeOutputToFile(QString outputPath, QMap<int, CircuitConnection>& circuitMap)
+void writeOutputToFile(QString outputPath, QMap<QString, CircuitConnection>& circuitMap)
 {
     QFile outFile(outputPath);
     if (!outFile.open(QFile::WriteOnly | QFile::Text)) {
-        throw QString("Output not found");
+        throw QString("Неверно указан файл для выходных данных. Возможно указанного расположения не существует или нет прав на запись.");
     }
 
     auto keyIter = circuitMap.keyBegin();
@@ -53,10 +53,9 @@ void writeOutputToFile(QString outputPath, QMap<int, CircuitConnection>& circuit
     while (keyIter != circuitMap.keyEnd())
     {
         CircuitConnection& currCirc = circuitMap[*keyIter];
-        if (currCirc.name.length() > 0)
+        if (currCirc.hasCustomName)
         {
-            QString outLine;// = currCirc.name + " = " + QString::number(currCirc.current.real()) + " " + QString::number(currCirc.current.imag());
-            outLine = QString("%1 = %2\n").arg(currCirc.name, complexToStr(currCirc.current));
+            QString outLine = QString("%1 = %2\n").arg(currCirc.name, complexToStr(currCirc.current));
             outFile.write(outLine.toStdString().c_str());
         }
         keyIter++;

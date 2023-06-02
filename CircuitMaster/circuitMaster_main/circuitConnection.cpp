@@ -135,7 +135,7 @@ CircuitConnection::ConnectionType CircuitConnection::strToConnectionType(QString
     return type;
 }
 
-CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<int, CircuitConnection>& map, QDomNode node)
+CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<QString, CircuitConnection>& map, QDomNode node)
 {
     QDomElement element = node.toElement();
     QString nodeType = element.tagName();
@@ -149,7 +149,26 @@ CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<int, Circuit
     newCircuit.id = newId;
 
     // Получаем название соединения
-    newCircuit.name = element.attribute("name", "");
+    QString newName = element.attribute("name", "");
+    if (newName == "")
+    {
+        newName = QString::number(newId);
+        newCircuit.hasCustomName = false;
+    }
+    else
+    {
+        newCircuit.hasCustomName = true;
+    }
+    qDebug() << newName;
+    newCircuit.name = newName;
+
+    // Проверяем имя на уникальность
+    QList<QString> usedNames = map.keys();
+    for (int i = 0; i < usedNames.count(); i++)
+    {
+        if (usedNames[i] == newName)
+            throw QString("Имя соединения должно быть уникальным. Повтор имени соединения на строке %1.").arg(QString::number(element.lineNumber()));
+    }
 
     // Получаем значение напряжения, если указано
     double voltageAtr = element.attribute("voltage", "-1").toDouble();
@@ -157,11 +176,11 @@ CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<int, Circuit
          newCircuit.setVoltage(voltageAtr);
 
     // Добавляем объект в QMap всех соединений цепи
-    map.insert(newId, newCircuit);
+    map.insert(newName, newCircuit);
     qDebug() << "Added " << element.tagName();
 
     // Указатель на новый объект соединения в QMap для дальнейшего его заполнения
-    CircuitConnection* circuit = &map[newId];
+    CircuitConnection* circuit = &map[newName];
 
     // Определить тип соединения
     CircuitConnection::ConnectionType circuitType = CircuitConnection::strToConnectionType(nodeType);

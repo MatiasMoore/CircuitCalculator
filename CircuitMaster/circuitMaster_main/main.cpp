@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
     //Проверяем кол-во аргументов, завершаем программу, если их недостаточно
     if (argc != 3)
     {
-        printf("Неверное количество аргументов\n");
+        printf("Неверное количество аргументов.\n");
         return 0;
     }
 
@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
     try {
 
         //Создаём дерево соединений схемы
-        QMap<int, CircuitConnection> circuitMap;
+        QMap<QString, CircuitConnection> circuitMap;
         readInputFromFile(inputPath, circuitMap);
 
         //Вычсиляем сопротивления для всех соединений рекурсивно

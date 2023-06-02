@@ -32,6 +32,7 @@ class CircuitConnection
     std::complex<double> resistance = 0;
     std::complex<double> voltage;
     std::complex<double> current;
+    bool hasCustomName = false;
     bool isVoltageSet = false;
     bool isCurrentSet = false;
     public:
@@ -85,7 +86,7 @@ class CircuitConnection
     * \param[in] parentPtr - указатель на соединение-родителя
     * \return - указатель на созданный в map объект класса
     */
-    static CircuitConnection* connectionFromDocElement(QMap<int, CircuitConnection>& map, QDomNode node);
+    static CircuitConnection* connectionFromDocElement(QMap<QString, CircuitConnection>& map, QDomNode node);
 
 };
 

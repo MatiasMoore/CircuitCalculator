@@ -17,13 +17,13 @@ QString complexToStr(std::complex<double> num);
 * \param[in] inputPath - путь к файлу
 * \param[in|out] circuitMap - контейнер для записи дерева соединений
 */
-void readInputFromFile(QString inputPath, QMap<int, CircuitConnection>& circuitMap);
+void readInputFromFile(QString inputPath, QMap<QString, CircuitConnection>& circuitMap);
 
 /*!
 * \Записать силы тока для соединений с известным именем в файл
 * \param[in] outputPath - путь к файлу
 * \param[in] circuitMap - контейнер с деревом соединений
 */
-void writeOutputToFile(QString outputPath, QMap<int, CircuitConnection>& circuitMap);
+void writeOutputToFile(QString outputPath, QMap<QString, CircuitConnection>& circuitMap);
 
 #endif // IOFUNCTIONS_H
