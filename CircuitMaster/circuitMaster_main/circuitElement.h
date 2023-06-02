@@ -27,6 +27,11 @@ class CircuitElement
     */
     std::complex<double> calculateElemResistance();
 
+    /*!
+    * \Получить тип элемента на основе его текстового представления
+    * \param[in] typeStr - строка, содержащая название типа
+    * \return - тип элемента
+    */
     static ElemType elemTypeFromStr(QString typeStr);
 };
 

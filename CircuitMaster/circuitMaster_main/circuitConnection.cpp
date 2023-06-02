@@ -113,12 +113,12 @@ void CircuitConnection::calculateCurrentAndVoltage()
 }
 
 
-bool CircuitConnection::addElement(CircuitElement newElem)
+void CircuitConnection::addElement(CircuitElement newElem)
 {
     this->elements.append(newElem);
 }
 
-bool CircuitConnection::addChild(CircuitConnection* newChildCircuit)
+void CircuitConnection::addChild(CircuitConnection* newChildCircuit)
 {
     this->children.append(newChildCircuit);
     newChildCircuit->parent = this;

@@ -35,8 +35,16 @@ class CircuitConnection
     bool isVoltageSet = false;
     bool isCurrentSet = false;
     public:
+    /*!
+    * \Установить значение напряжения соединения
+    * \param[in] newVolt - новое значение напряжения
+    */
     void setVoltage(std::complex<double> newVolt);
 
+    /*!
+    * \Установить значение силы тока соединения
+    * \param[in] newCurr - новое значение силы тока
+    */
     void setCurrent(std::complex<double> newCurr);
 
     /*!
@@ -51,10 +59,23 @@ class CircuitConnection
     */
     void calculateCurrentAndVoltage();
 
-    bool addElement(CircuitElement newElem);
+    /*!
+    * \Добавить элемент в соединение
+    * \param[in] newElem - новый элемент
+    */
+    void addElement(CircuitElement newElem);
 
-    bool addChild(CircuitConnection* newChildCircuit);
+    /*!
+    * \Добавить соединение-ребенка
+    * \param[in] newChildCircuit - указатель на соединение-ребенка
+    */
+    void addChild(CircuitConnection* newChildCircuit);
 
+    /*!
+    * \Получить тип соединение на основе его текстового представления
+    * \param[in] strType - строка, содержащая название типа
+    * \return - тип соединения
+    */
     static ConnectionType strToConnectionType(QString strType);
 
     /*!

@@ -15,12 +15,11 @@ QString complexToStr(std::complex<double> num)
     return str;
 }
 
-bool readInputFromFile(QString inputPath, QMap<int, CircuitConnection>& circuitMap)
+void readInputFromFile(QString inputPath, QMap<int, CircuitConnection>& circuitMap)
 {
     QFile xmlFile(inputPath);
     if (!xmlFile.exists() || !xmlFile.open(QFile::ReadOnly | QFile::Text)) {
         throw QString("Input not found");
-        return 0;
     }
 
     // Setup DomDocument
@@ -40,16 +39,13 @@ bool readInputFromFile(QString inputPath, QMap<int, CircuitConnection>& circuitM
     QDomElement rootElement = domDocument.documentElement();
 
     CircuitConnection::connectionFromDocElement(circuitMap, rootElement);
-
-    return 1;
 }
 
-bool writeOutputToFile(QString outputPath, QMap<int, CircuitConnection>& circuitMap)
+void writeOutputToFile(QString outputPath, QMap<int, CircuitConnection>& circuitMap)
 {
     QFile outFile(outputPath);
     if (!outFile.open(QFile::WriteOnly | QFile::Text)) {
         throw QString("Output not found");
-        return 0;
     }
 
     auto keyIter = circuitMap.keyBegin();
