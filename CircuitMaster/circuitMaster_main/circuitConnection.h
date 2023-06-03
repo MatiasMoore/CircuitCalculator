@@ -36,6 +36,9 @@ class CircuitConnection
     bool isVoltageSet = false;
     bool isCurrentSet = false;
     public:
+
+    bool operator == (CircuitConnection& other);
+
     /*!
     * \Установить значение напряжения соединения
     * \param[in] newVolt - новое значение напряжения

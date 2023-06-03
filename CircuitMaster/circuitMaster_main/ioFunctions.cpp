@@ -28,10 +28,7 @@ void readInputFromFile(QString inputPath, QMap<QString, CircuitConnection>& circ
     int errorLine;
     if (!domDocument.setContent(&xmlFile, &errorMes, &errorLine))
     {
-        char buff[90];
-        sprintf(buff, "%s at line %d\n", errorMes.toStdString().c_str(), errorLine);
-        std::string errorStr = buff;
-        throw errorStr;
+        throw QString("%1 at line %2").arg(errorMes, QString::number(errorLine));
     }
 
     xmlFile.close();
