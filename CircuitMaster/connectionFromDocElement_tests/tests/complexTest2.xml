@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<seq voltage="20" name="seqComplex1">
+     <par name="par1">
+          <par name="par2">
+               <seq name="seq1">
+                    <elem>
+                         <type>R</type>
+                         <value>1</value>
+                    </elem>
+                    <elem>
+                         <type>L</type>
+                         <value>2</value>
+                    </elem>
+               </seq>
+               <par name="par3">
+                    <seq name="seq2">
+                         <elem>
+                              <type>C</type>
+                              <value>4</value>
+                         </elem>
+                         <elem>
+                              <type>R</type>
+                              <value>6</value>
+                         </elem>
+                    </seq>
+                    <seq name="seq3">
+                         <elem>
+                              <type>L</type>
+							  <value>5</value>
+                         </elem>
+                    </seq>
+               </par>
+          </par>
+          <seq name="seq4">
+               <elem>
+                    <type>R</type>
+                    <value>3</value>
+               </elem>
+          </seq>
+     </par>
+     <par name="par4">
+          <seq name="seq5">
+               <elem>
+                    <type>R</type>
+                    <value>1.2</value>
+               </elem>
+               <elem>
+                    <type>L</type>
+                    <value>3.4</value>
+               </elem>
+               <elem>
+                    <type>C</type>
+                    <value>8</value>
+               </elem>
+          </seq>
+          <par name="par5">
+               <seq name="seq6">
+					<elem>
+                         <type>L</type>
+                         <value>8</value>
+                    </elem>
+               </seq>
+               <seq name="seq7">
+                    <elem>
+                         <type>L</type>
+                         <value>6</value>
+                    </elem>
+               </seq>
+          </par>
+     </par>
+</seq>
