@@ -10,6 +10,13 @@ CircuitConnection::CircuitConnection(ConnectionType startType)
     this->type = startType;
 }
 
+CircuitConnection::CircuitConnection(ConnectionType startType, QString startName)
+{
+    this->type = startType;
+    this->name = startName;
+    this->hasCustomName = true;
+}
+
 CircuitConnection::CircuitConnection(ConnectionType startType, CircuitElement startElem)
 {
     this->type = startType;

@@ -18,6 +18,8 @@ class CircuitConnection
 
     CircuitConnection(ConnectionType startType);
 
+    CircuitConnection(ConnectionType startType, QString startName);
+
     CircuitConnection(ConnectionType startType, CircuitElement startElem);
 
     CircuitConnection(ConnectionType startType, std::complex<double> startResistance);
