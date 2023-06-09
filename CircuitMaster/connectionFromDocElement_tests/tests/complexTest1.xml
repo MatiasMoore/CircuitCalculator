@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<seq voltage="20" name="seqComplex1">
+     <par name="par1">
+          <seq name="seq1">
+               <elem>
+                    <type>R</type>
+                    <value>1</value>
+               </elem>
+          </seq>
+          <par name="par2">
+               <seq name="seq2">
+                    <elem>
+                         <type>R</type>
+                         <value>2</value>
+                    </elem>
+               </seq>
+               <seq name="seq3">
+                    <elem>
+                         <type>R</type>
+                         <value>3</value>
+                    </elem>
+               </seq>
+          </par>
+     </par>
+     <seq name="seqComplex2">
+          <par name="par3">
+               <seq name="seq4">
+                    <elem>
+                         <type>R</type>
+                         <value>4</value>
+                    </elem>
+               </seq>
+               <seq name="seq5">
+                    <elem>
+                         <type>R</type>
+                         <value>5</value>
+                    </elem>
+               </seq>
+          </par>
+          <seq name="seq6">
+               <elem>
+                    <type>R</type>
+                    <value>6</value>
+               </elem>
+          </seq>
+     </seq>
+</seq>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<seq name="seq1" voltage="20">
+	<elem>
+	      <type>R</type>
+	      <value>1.8</value>
+	 </elem>
+</seq>
+
+

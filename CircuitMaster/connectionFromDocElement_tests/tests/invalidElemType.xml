@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<seq voltage=”20”>
+	<elem>
+	   <type>X</type>
+	   <value>1</value>
+	</elem>
+</seq>

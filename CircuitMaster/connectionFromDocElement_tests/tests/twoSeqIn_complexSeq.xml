@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<seq voltage="20" name="seqComplex1">
+    <seq name="seq1">
+        <elem>
+            <type>R</type>
+            <value>1</value>
+        </elem>
+    </seq>
+    <seq name="seq2">
+        <elem>
+            <type>R</type>
+            <value>2</value>
+        </elem>
+    </seq>
+</seq>
