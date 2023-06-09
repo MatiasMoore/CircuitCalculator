@@ -9,29 +9,32 @@ void COMPARE_COMPLEX(std::complex<double> expected, std::complex<double> actual,
     QVERIFY2(realDelta < epsilon && imagDelta < epsilon, message);
 }
 
-void COMPARE_ELEMENTS(CircuitElement expected, CircuitElement actual)
+void COMPARE_ELEMENTS(CircuitElement expectedElement, CircuitElement actualElement)
 {
-    QVERIFY2(expected.type == actual.type, "Element types don't match");
-    QVERIFY2(expected.simpleResistance == actual.simpleResistance, "Element resistance values don't match");
+    QCOMPARE(actualElement.type, expectedElement.type);
+    QCOMPARE(actualElement.simpleResistance, expectedElement.simpleResistance);
 }
 
-void COMPARE_CONNECTION(CircuitConnection expected, CircuitConnection actual)
+void COMPARE_CONNECTION(CircuitConnection expectedConnection, CircuitConnection actualConnection)
 {
-    QVERIFY2(expected.name == actual.name, "Connection names don't match");
-    QVERIFY2(expected.voltage == actual.voltage, "Connection voltage values don't match");
-    QVERIFY2(expected.elements.count() == actual.elements.count(), "Connections don't have the same amount of elements");
-    for (int i = 0; i < expected.elements.count(); i++)
+    QCOMPARE(actualConnection.name, expectedConnection.name);
+    QCOMPARE(actualConnection.type, expectedConnection.type);
+    QCOMPARE(actualConnection.voltage, expectedConnection.voltage);
+    QCOMPARE(actualConnection.elements.count(), expectedConnection.elements.count());
+    for (int i = 0; i < expectedConnection.elements.count(); i++)
     {
-        COMPARE_ELEMENTS(expected.elements[i], actual.elements[i]);
+        COMPARE_ELEMENTS(expectedConnection.elements[i], actualConnection.elements[i]);
     }
 }
 
 void COMPARE_CONNECTION_TREE(CircuitConnection expected, CircuitConnection actual)
 {
     COMPARE_CONNECTION(expected, actual);
-    QVERIFY2(expected.children.count() == actual.children.count(), "Connections trees don't have the same amount of children");
+    char mess[500];
+    sprintf(mess, "Connection \"%s\" doesn't have the expected amount of children", actual.name.toStdString().c_str());
+    QVERIFY2(expected.children.count() == actual.children.count(), mess);
     for (int i = 0; i < expected.children.count(); i++)
     {
-        COMPARE_CONNECTION(*expected.children[i], *actual.children[i]);
+        COMPARE_CONNECTION_TREE(*expected.children[i], *actual.children[i]);
     }
 }
