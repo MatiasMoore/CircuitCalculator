@@ -13,10 +13,7 @@ class CircuitElement
     {
         invalid, R, L, C
     };
-    CircuitElement()
-    {
 
-    }
     CircuitElement(ElemType startType, std::complex<double> startValue);
 
     CircuitElement(QDomNode node, double frequency);
