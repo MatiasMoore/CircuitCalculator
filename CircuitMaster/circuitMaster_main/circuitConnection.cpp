@@ -163,6 +163,9 @@ CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<QString, Cir
     QString nodeType = element.tagName();
     QDomNodeList children = node.childNodes();
 
+    if (nodeType != "seq" && nodeType != "par")
+        throw QString("Неизвестный тэг элемента на строке %1").arg(QString::number(element.lineNumber()));
+
     // Создаём новый объект соединения
     CircuitConnection newCircuit;
 
