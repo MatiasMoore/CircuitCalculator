@@ -169,7 +169,6 @@ CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<QString, Cir
     {
         newCircuit.hasCustomName = true;
     }
-    qDebug() << newName;
     newCircuit.name = newName;
 
     // Проверяем имя на уникальность
@@ -187,7 +186,6 @@ CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<QString, Cir
 
     // Добавляем объект в QMap всех соединений цепи
     map.insert(newName, newCircuit);
-    qDebug() << "Added " << element.tagName();
 
     // Указатель на новый объект соединения в QMap для дальнейшего его заполнения
     CircuitConnection* circuit = &map[newName];

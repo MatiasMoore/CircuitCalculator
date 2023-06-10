@@ -232,7 +232,6 @@ void connectionFromDocElement_tests::floatResistance()
     CircuitConnection expectedSeq = CircuitConnection(CircuitConnection::ConnectionType::sequential, "seq1");
     expectedSeq.setVoltage(20);
     expectedSeq.addElement(CircuitElement(CircuitElement::ElemType::R, 1.8));
-    qDebug() << complexToStr(circuitMap["seq1"].elements[0].getElemResistance());
     COMPARE_CONNECTION_TREE(expectedSeq, circuitMap["seq1"]);
 }
 
