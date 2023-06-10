@@ -2,15 +2,15 @@
 <seq name="seq1" voltage="20">
 	<elem>
 	      <type>R</type>
-	      <value>1</value>
+	      <res>1</res>
 	 </elem>
 	 <elem>
 	      <type>L</type>
-	      <value>1</value>
+	      <res>1</res>
 	 </elem>
 	<elem>
 	      <type>C</type>
-	      <value>1</value>
+	      <res>1</res>
 	 </elem>
 </seq>
 

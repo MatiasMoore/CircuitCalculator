@@ -173,7 +173,7 @@ void connectionFromDocElement_tests::simpleSeqOneL()
 
     CircuitConnection expectedSeq = CircuitConnection(CircuitConnection::ConnectionType::sequential, "seq1");
     expectedSeq.setVoltage(20);
-    expectedSeq.addElement(CircuitElement(CircuitElement::ElemType::L, 1));
+    expectedSeq.addElement(CircuitElement(CircuitElement::ElemType::L, std::complex<double>(0, 1)));
 
     COMPARE_CONNECTION_TREE(expectedSeq, circuitMap["seq1"]);
 
@@ -192,7 +192,7 @@ void connectionFromDocElement_tests::simpleSeqOneC()
 
     CircuitConnection expectedSeq = CircuitConnection(CircuitConnection::ConnectionType::sequential, "seq1");
     expectedSeq.setVoltage(20);
-    expectedSeq.addElement(CircuitElement(CircuitElement::ElemType::C, 1));
+    expectedSeq.addElement(CircuitElement(CircuitElement::ElemType::C, std::complex<double>(0, -1)));
 
     COMPARE_CONNECTION_TREE(expectedSeq, circuitMap["seq1"]);
 
@@ -212,8 +212,8 @@ void connectionFromDocElement_tests::simpleSeqRLC()
     CircuitConnection expectedSeq = CircuitConnection(CircuitConnection::ConnectionType::sequential, "seq1");
     expectedSeq.setVoltage(20);
     expectedSeq.addElement(CircuitElement(CircuitElement::ElemType::R, 1));
-    expectedSeq.addElement(CircuitElement(CircuitElement::ElemType::L, 1));
-    expectedSeq.addElement(CircuitElement(CircuitElement::ElemType::C, 1));
+    expectedSeq.addElement(CircuitElement(CircuitElement::ElemType::L, std::complex<double>(0, 1)));
+    expectedSeq.addElement(CircuitElement(CircuitElement::ElemType::C, std::complex<double>(0, -1)));
 
     COMPARE_CONNECTION_TREE(expectedSeq, circuitMap["seq1"]);
 }
@@ -232,7 +232,7 @@ void connectionFromDocElement_tests::floatResistance()
     CircuitConnection expectedSeq = CircuitConnection(CircuitConnection::ConnectionType::sequential, "seq1");
     expectedSeq.setVoltage(20);
     expectedSeq.addElement(CircuitElement(CircuitElement::ElemType::R, 1.8));
-
+    qDebug() << complexToStr(circuitMap["seq1"].elements[0].getElemResistance());
     COMPARE_CONNECTION_TREE(expectedSeq, circuitMap["seq1"]);
 }
 
@@ -490,16 +490,16 @@ void connectionFromDocElement_tests::complexTest2()
 
     CircuitConnection seq1 = CircuitConnection(CircuitConnection::ConnectionType::sequential, "seq1");
     seq1.addElement(CircuitElement(CircuitElement::ElemType::R, 1));
-    seq1.addElement(CircuitElement(CircuitElement::ElemType::L, 2));
+    seq1.addElement(CircuitElement(CircuitElement::ElemType::L, std::complex<double>(0, 2)));
 
     CircuitConnection par3 = CircuitConnection(CircuitConnection::ConnectionType::parallel, "par3");
 
     CircuitConnection seq2 = CircuitConnection(CircuitConnection::ConnectionType::sequential, "seq2");
-    seq2.addElement(CircuitElement(CircuitElement::ElemType::C, 4));
+    seq2.addElement(CircuitElement(CircuitElement::ElemType::C, std::complex<double>(0, -4)));
     seq2.addElement(CircuitElement(CircuitElement::ElemType::R, 6));
 
     CircuitConnection seq3 = CircuitConnection(CircuitConnection::ConnectionType::sequential, "seq3");
-    seq3.addElement(CircuitElement(CircuitElement::ElemType::L, 5));
+    seq3.addElement(CircuitElement(CircuitElement::ElemType::L, std::complex<double>(0, 5)));
 
     par3.addChild(&seq2);
     par3.addChild(&seq3);
@@ -517,16 +517,16 @@ void connectionFromDocElement_tests::complexTest2()
 
     CircuitConnection seq5 = CircuitConnection(CircuitConnection::ConnectionType::sequential, "seq5");
     seq5.addElement(CircuitElement(CircuitElement::ElemType::R, 1.2));
-    seq5.addElement(CircuitElement(CircuitElement::ElemType::L, 3.4));
-    seq5.addElement(CircuitElement(CircuitElement::ElemType::C, 8));
+    seq5.addElement(CircuitElement(CircuitElement::ElemType::L, std::complex<double>(0, 3.4)));
+    seq5.addElement(CircuitElement(CircuitElement::ElemType::C, std::complex<double>(0, -8)));
 
     CircuitConnection par5 = CircuitConnection(CircuitConnection::ConnectionType::parallel, "par5");
 
     CircuitConnection seq6 = CircuitConnection(CircuitConnection::ConnectionType::sequential, "seq6");
-    seq6.addElement(CircuitElement(CircuitElement::ElemType::L, 8));
+    seq6.addElement(CircuitElement(CircuitElement::ElemType::L, std::complex<double>(0, 8)));
 
     CircuitConnection seq7 = CircuitConnection(CircuitConnection::ConnectionType::sequential, "seq7");
-    seq7.addElement(CircuitElement(CircuitElement::ElemType::L, 6));
+    seq7.addElement(CircuitElement(CircuitElement::ElemType::L, std::complex<double>(0, 6)));
 
     par5.addChild(&seq6);
     par5.addChild(&seq7);

@@ -5,28 +5,28 @@
                <seq name="seq1">
                     <elem>
                          <type>R</type>
-                         <value>1</value>
+                         <res>1</res>
                     </elem>
                     <elem>
                          <type>L</type>
-                         <value>2</value>
+                         <res>2</res>
                     </elem>
                </seq>
                <par name="par3">
                     <seq name="seq2">
                          <elem>
                               <type>C</type>
-                              <value>4</value>
+                              <res>4</res>
                          </elem>
                          <elem>
                               <type>R</type>
-                              <value>6</value>
+                              <res>6</res>
                          </elem>
                     </seq>
                     <seq name="seq3">
                          <elem>
                               <type>L</type>
-							  <value>5</value>
+							  <res>5</res>
                          </elem>
                     </seq>
                </par>
@@ -34,7 +34,7 @@
           <seq name="seq4">
                <elem>
                     <type>R</type>
-                    <value>3</value>
+                    <res>3</res>
                </elem>
           </seq>
      </par>
@@ -42,28 +42,28 @@
           <seq name="seq5">
                <elem>
                     <type>R</type>
-                    <value>1.2</value>
+                    <res>1.2</res>
                </elem>
                <elem>
                     <type>L</type>
-                    <value>3.4</value>
+                    <res>3.4</res>
                </elem>
                <elem>
                     <type>C</type>
-                    <value>8</value>
+                    <res>8</res>
                </elem>
           </seq>
           <par name="par5">
                <seq name="seq6">
 					<elem>
                          <type>L</type>
-                         <value>8</value>
+                         <res>8</res>
                     </elem>
                </seq>
                <seq name="seq7">
                     <elem>
                          <type>L</type>
-                         <value>6</value>
+                         <res>6</res>
                     </elem>
                </seq>
           </par>

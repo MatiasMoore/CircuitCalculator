@@ -4,20 +4,20 @@
           <seq name="seq1">
                <elem>
                     <type>R</type>
-                    <value>1</value>
+                    <res>1</res>
                </elem>
           </seq>
           <par name="par2">
                <seq name="seq2">
                     <elem>
                          <type>R</type>
-                         <value>2</value>
+                         <res>2</res>
                     </elem>
                </seq>
                <seq name="seq3">
                     <elem>
                          <type>R</type>
-                         <value>3</value>
+                         <res>3</res>
                     </elem>
                </seq>
           </par>
@@ -27,20 +27,20 @@
                <seq name="seq4">
                     <elem>
                          <type>R</type>
-                         <value>4</value>
+                         <res>4</res>
                     </elem>
                </seq>
                <seq name="seq5">
                     <elem>
                          <type>R</type>
-                         <value>5</value>
+                         <res>5</res>
                     </elem>
                </seq>
           </par>
           <seq name="seq6">
                <elem>
                     <type>R</type>
-                    <value>6</value>
+                    <res>6</res>
                </elem>
           </seq>
      </seq>

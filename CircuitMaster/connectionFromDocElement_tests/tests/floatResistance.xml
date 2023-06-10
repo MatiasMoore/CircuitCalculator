@@ -2,7 +2,7 @@
 <seq name="seq1" voltage="20">
 	<elem>
 	      <type>R</type>
-	      <value>1.8</value>
+	      <res>1.8</res>
 	 </elem>
 </seq>
 
