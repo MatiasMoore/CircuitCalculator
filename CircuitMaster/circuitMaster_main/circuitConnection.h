@@ -4,7 +4,6 @@
 #include <QList>
 #include <QMap>
 #include <QtXml/QDomDocument>
-#include <qdebug.h>
 #include "circuitElement.h"
 
 class CircuitConnection

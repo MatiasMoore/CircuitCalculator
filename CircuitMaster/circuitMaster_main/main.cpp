@@ -1,12 +1,5 @@
-#include <QCoreApplication>
 #include <iostream>
-#include <complex>
-#include <QList>
 #include <QMap>
-#include <QtXml/QDomDocument>
-#include <stdio.h>
-#include <windows.h>
-#include "circuitElement.h"
 #include "circuitConnection.h"
 #include "ioFunctions.h"
 
