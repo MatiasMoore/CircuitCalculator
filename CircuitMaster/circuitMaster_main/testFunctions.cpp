@@ -1,5 +1,10 @@
 #include "testFunctions.h"
 
+/*!
+*\file
+*\brief Реализация функций для упрощения тестирования функций, связанных с цепью переменного тока
+*/
+
 void COMPARE_COMPLEX(std::complex<double> expected, std::complex<double> actual, double epsilon)
 {
     double realDelta = abs(expected.real() - actual.real());

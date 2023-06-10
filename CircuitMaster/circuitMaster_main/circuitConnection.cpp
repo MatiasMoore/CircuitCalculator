@@ -1,5 +1,10 @@
 #include "circuitConnection.h"
 
+/*!
+*\file
+*\brief Реализация конструкторов и функций класса CircuitConnection
+*/
+
 CircuitConnection::CircuitConnection()
 {
 

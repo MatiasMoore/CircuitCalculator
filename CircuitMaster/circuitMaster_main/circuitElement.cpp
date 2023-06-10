@@ -1,5 +1,10 @@
 #include "circuitElement.h"
 
+/*!
+*\file
+*\brief Реализация конструкторов и функций класса CircuitElement
+*/
+
 CircuitElement::CircuitElement(ElemType startType, std::complex<double> startValue)
 {
     this->type = startType;

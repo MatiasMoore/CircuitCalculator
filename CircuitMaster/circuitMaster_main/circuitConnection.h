@@ -6,86 +6,126 @@
 #include <QtXml/QDomDocument>
 #include "circuitElement.h"
 
+/*!
+*\file
+*\brief Переменные, заголовки конструкторов и функций класса CircuitConnection
+*/
+
+/*!
+*\class CircuitConnection
+*\brief Соединение цепи переменного тока
+*
+* Соединение цепи имеет название, тип, напряжение, силу тока и сопротивление. Оно также
+* может содержать элементы класса CircutElement, указатели на вложенные соединения
+* и указатель на соединения-родителя
+*/
 class CircuitConnection
 {
     public:
     enum class ConnectionType
     {
-        invalid, parallel, sequential, sequentialComplex
+        invalid, /*!< Неверный тип соединения */
+        parallel, /*!< Параллельное соединение */
+        sequential, /*!< Последовательное соединение */
+        sequentialComplex /*!< Последовательное соединение со вложенными соединениями */
     };
+
+    /*!
+    * \brief Конструктор по умолчанию
+    * \param[in] newVolt - новое значение напряжения
+    */
     CircuitConnection();
 
+    /*!
+    * \brief Конструктор соединения определенного типа
+    * \param[in] startType - тип соединения
+    */
     CircuitConnection(ConnectionType startType);
 
+    /*!
+    * \brief Конструктор соединения определенного типа и имени
+    * \param[in] startType - тип соединения
+    * \param[in] startName - название соединения
+    */
     CircuitConnection(ConnectionType startType, QString startName);
 
+    /*!
+    * \brief Конструктор соединения определенного типа с элементом
+    * \param[in] startType - тип соединения
+    * \param[in] startElem - элемент соединения
+    */
     CircuitConnection(ConnectionType startType, CircuitElement startElem);
 
+    /*!
+    * \brief Конструктор соединения определенного типа с известным сопротивлением
+    * \param[in] startType - тип соединения
+    * \param[in] startResistance - сопротивление соединения
+    */
     CircuitConnection(ConnectionType startType, std::complex<double> startResistance);
 
     public:
-    QString name;
-    int id;
-    ConnectionType type;
-    QList<CircuitElement> elements;
-    QList<CircuitConnection*> children;
-    CircuitConnection* parent = NULL;
-    std::complex<double> resistance = 0;
-    std::complex<double> voltage;
-    std::complex<double> current;
-    bool hasCustomName = false;
-    bool isVoltageSet = false;
-    bool isCurrentSet = false;
+    QString name; /*!< Название соединения */
+    int id; /*!< id соединения */
+    ConnectionType type; /*!< Тип соединения */
+    QList<CircuitElement> elements; /*!< QList элементов соединения */
+    QList<CircuitConnection*> children; /*!< QList указателей на соединения-детей */
+    CircuitConnection* parent = NULL; /*!< Указатель на соединение-родителя */
+    std::complex<double> resistance; /*!< Комплексное сопротивление соединения */
+    std::complex<double> voltage; /*!< Комплексное напряжение соединения */
+    std::complex<double> current; /*!< Комплексная сила тока соединения */
+    bool hasCustomName = false; /*!< Указано ли имя пользователем */
+    bool isVoltageSet = false; /*!< Известно ли напряжение */
+    bool isCurrentSet = false; /*!< Известна ли сила тока */
     public:
 
     /*!
-    * \Установить значение напряжения соединения
+    * \brief Установить значение напряжения соединения
     * \param[in] newVolt - новое значение напряжения
     */
     void setVoltage(std::complex<double> newVolt);
 
     /*!
-    * \Установить значение силы тока соединения
+    * \brief Установить значение силы тока соединения
     * \param[in] newCurr - новое значение силы тока
     */
     void setCurrent(std::complex<double> newCurr);
 
     /*!
-    * \Рассчитывает сопротивление соединения цепи в виде комплексного числа
+    * \brief Рассчитывает сопротивление соединения цепи в виде комплексного числа
     * \return - полученное сопротивление
     */
     std::complex<double> calculateResistance();
 
     /*!
-    * \Рассчитывает силу тока и напряжение в виде комплексного числа для соединеия и всех его вложенных соединений
+    * \brief Рассчитывает силу тока и напряжение в виде комплексного числа для соединеия и всех его вложенных соединений
     * \return - результаты записываются в объекты класса
     */
     void calculateCurrentAndVoltage();
 
     /*!
-    * \Добавить элемент в соединение
+    * \brief Добавить элемент в соединение
     * \param[in] newElem - новый элемент
     */
     void addElement(CircuitElement newElem);
 
     /*!
-    * \Добавить соединение-ребенка
+    * \brief Добавить соединение-ребенка
     * \param[in] newChildCircuit - указатель на соединение-ребенка
     */
     void addChild(CircuitConnection* newChildCircuit);
 
     /*!
-    * \Получить тип соединение на основе его текстового представления
+    * \brief Получить тип соединение на основе его текстового представления
     * \param[in] strType - строка, содержащая название типа
     * \return - тип соединения
     */
     static ConnectionType strToConnectionType(QString strType);
 
     /*!
-    * \Получить объекты класса из корневого элемента документа
-    * \param[in|out] map - контейнер для записи соединений
+    * \brief Получить объекты класса из корневого элемента документа и записать в контейнер
+    * \param[in,out] map - контейнер для записи соединений
     * \param[in] node - тэг элемента по кторому создается запись
-    * \param[in] parentPtr - указатель на соединение-родителя
+    * \param[in] frequency - частота перемнного тока, если неизвестна передать значение -1
     * \return - указатель на созданный в map объект класса
     */
     static CircuitConnection* connectionFromDocElement(QMap<QString, CircuitConnection>& map, QDomNode node, double frequency);

@@ -1,5 +1,10 @@
 #include "ioFunctions.h"
 
+/*!
+*\file
+*\brief Реализация функций для работы с файлами
+*/
+
 QString complexToStr(std::complex<double> num)
 {
     QString str;
