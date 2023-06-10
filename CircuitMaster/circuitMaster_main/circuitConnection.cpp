@@ -67,7 +67,7 @@ std::complex<double> CircuitConnection::calculateResistance()
         // Сопротивление цепи равно сумме сопротивлений её элементов
         for (int i = 0; i < this->elements.count(); i++)
         {
-            this->resistance += this->elements[i].calculateElemResistance();
+            this->resistance += this->elements[i].resistance;//calculateElemResistance();
         }
     }
     // Для сложного последовательного соединения
@@ -157,7 +157,7 @@ CircuitConnection::ConnectionType CircuitConnection::strToConnectionType(QString
     return type;
 }
 
-CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<QString, CircuitConnection>& map, QDomNode node)
+CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<QString, CircuitConnection>& map, QDomNode node, double frequency)
 {
     QDomElement element = node.toElement();
     QString nodeType = element.tagName();
@@ -222,7 +222,7 @@ CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<QString, Cir
         // Рекурсивно обрабатываем каждого ребёнка текущей цепи
         for(int i = 0; i < children.count(); i++)
         {
-            CircuitConnection* currChildPtr = connectionFromDocElement(map, children.at(i));
+            CircuitConnection* currChildPtr = connectionFromDocElement(map, children.at(i), frequency);
             if (currChildPtr != NULL)
             {
                 circuit->addChild(currChildPtr);
@@ -239,22 +239,7 @@ CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<QString, Cir
         // Добавляем все элементы в соединение
         for(int i = 0; i < children.count(); i++)
         {
-            QDomElement currElem = children.at(i).toElement();
-            if (currElem.tagName() == "elem")
-            {
-                QDomElement elem = currElem.firstChildElement("type");
-                if (elem.isNull())
-                {
-                    throw QString("Отсутсвует тип элемента на строке %1").arg(QString::number(currElem.lineNumber()));
-                }
-                CircuitElement::ElemType type = CircuitElement::elemTypeFromStr(elem.text());
-                if (type == CircuitElement::ElemType::invalid)
-                {
-                    throw QString("Неверный тип элемента на строке %1").arg(QString::number(currElem.lineNumber()));
-                }
-                double value = currElem.firstChildElement("value").text().toDouble();
-                circuit->addElement(CircuitElement(type, value));
-            }
+            circuit->addElement(CircuitElement(children.at(i), frequency));
         }
     }
     return circuit;

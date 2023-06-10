@@ -12,7 +12,7 @@ void COMPARE_COMPLEX(std::complex<double> expected, std::complex<double> actual,
 void COMPARE_ELEMENTS(CircuitElement expectedElement, CircuitElement actualElement)
 {
     QCOMPARE(actualElement.type, expectedElement.type);
-    QCOMPARE(actualElement.simpleResistance, expectedElement.simpleResistance);
+    QCOMPARE(actualElement.resistance, expectedElement.resistance);
 }
 
 void COMPARE_CONNECTION(CircuitConnection expectedConnection, CircuitConnection actualConnection)

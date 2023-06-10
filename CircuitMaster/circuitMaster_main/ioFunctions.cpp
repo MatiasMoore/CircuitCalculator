@@ -39,11 +39,15 @@ void readInputFromFile(QString inputPath, QMap<QString, CircuitConnection>& circ
     auto parConnections = domDocument.elementsByTagName("par");
     auto conns = { seqConnections, parConnections};
     int voltageAttrCount = 0;
+    double frequency = -1;
     for (auto i = conns.begin(); i != conns.end(); i++)
     {
         for (int j = 0; j < i->count(); j++)
         {
             QDomNode node = i->at(j);
+            QString freqStr = node.toElement().attribute("frequency");
+            if (freqStr.length() > 0)
+                frequency = freqStr.toDouble();
             if (node.attributes().contains("voltage"))
                 voltageAttrCount++;
             if (voltageAttrCount > 1)
@@ -52,7 +56,7 @@ void readInputFromFile(QString inputPath, QMap<QString, CircuitConnection>& circ
     }
     if (voltageAttrCount == 0)
         throw QString("Не указано значение напряжения. Значение напряжения должно быть указано");
-    CircuitConnection::connectionFromDocElement(circuitMap, rootElement);
+    CircuitConnection::connectionFromDocElement(circuitMap, rootElement, frequency);
 }
 
 void writeOutputToFile(QString outputPath, QMap<QString, CircuitConnection>& circuitMap)

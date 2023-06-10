@@ -91,7 +91,7 @@ class CircuitConnection
     * \param[in] parentPtr - указатель на соединение-родителя
     * \return - указатель на созданный в map объект класса
     */
-    static CircuitConnection* connectionFromDocElement(QMap<QString, CircuitConnection>& map, QDomNode node);
+    static CircuitConnection* connectionFromDocElement(QMap<QString, CircuitConnection>& map, QDomNode node, double frequency);
 
 };
 

@@ -2,6 +2,7 @@
 #define CIRCUITELEMENT_H
 #include <complex>
 #include <QString>
+#include <QtXml/QDomDocument>
 
 class CircuitElement
 {
@@ -14,19 +15,15 @@ class CircuitElement
     {
 
     }
-    CircuitElement(ElemType startType, double startValue);
+    CircuitElement(ElemType startType, std::complex<double> startValue);
+
+    CircuitElement(QDomNode node, double frequency);
 
     public:
-    double simpleResistance;
+    std::complex<double> resistance;
     ElemType type;
 
     public:
-    /*!
-    * \Рассчитывает сопротивление элемента цепи в виде комплексного числа
-    * \return - полученное сопротивление
-    */
-    std::complex<double> calculateElemResistance();
-
     /*!
     * \Получить тип элемента на основе его текстового представления
     * \param[in] typeStr - строка, содержащая название типа
