@@ -35,6 +35,23 @@ void readInputFromFile(QString inputPath, QMap<QString, CircuitConnection>& circ
 
     QDomElement rootElement = domDocument.documentElement();
 
+    auto seqConnections = domDocument.elementsByTagName("seq");
+    auto parConnections = domDocument.elementsByTagName("par");
+    auto conns = { seqConnections, parConnections};
+    int voltageAttrCount = 0;
+    for (auto i = conns.begin(); i != conns.end(); i++)
+    {
+        for (int j = 0; j < i->count(); j++)
+        {
+            QDomNode node = i->at(j);
+            if (node.attributes().contains("voltage"))
+                voltageAttrCount++;
+            if (voltageAttrCount > 1)
+                throw QString("Повторное указание напряжения цепи на строке %1. Напряжение указывается лишь один раз для всей схемы").arg(QString::number(node.lineNumber()));
+        }
+    }
+    if (voltageAttrCount == 0)
+        throw QString("Не указано значение напряжения. Значение напряжения должно быть указано");
     CircuitConnection::connectionFromDocElement(circuitMap, rootElement);
 }
 
