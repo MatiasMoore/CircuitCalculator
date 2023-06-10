@@ -6,6 +6,8 @@
 
 class CircuitElement
 {
+    friend void COMPARE_ELEMENTS(CircuitElement expectedElement, CircuitElement actualElement);
+
     public:
     enum class ElemType
     {
@@ -19,11 +21,13 @@ class CircuitElement
 
     CircuitElement(QDomNode node, double frequency);
 
-    public:
+    private:
     std::complex<double> resistance;
     ElemType type;
 
     public:
+    std::complex<double> getElemResistance();
+
     /*!
     * \Получить тип элемента на основе его текстового представления
     * \param[in] typeStr - строка, содержащая название типа

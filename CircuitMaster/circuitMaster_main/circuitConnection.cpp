@@ -29,21 +29,6 @@ CircuitConnection::CircuitConnection(ConnectionType startType, std::complex<doub
     this->resistance = startResistance;
 }
 
-bool CircuitConnection::operator == (CircuitConnection& other)
-{
-    bool sameElements = this->elements.count() == other.elements.count();
-    for (int i = 0; i < this->elements.count(); i++)
-    {
-        if (this->elements[i].type != other.elements[i].type || this->elements[i].simpleResistance != other.elements[i].simpleResistance)
-            sameElements = false;
-    }
-    return sameElements
-            && this->name == other.name
-            && this->voltage == other.voltage
-            && this->current == other.current
-            && this->type == other.type;
-}
-
 void CircuitConnection::setVoltage(std::complex<double> newVolt)
 {
     this->voltage = newVolt;
@@ -67,7 +52,7 @@ std::complex<double> CircuitConnection::calculateResistance()
         // Сопротивление цепи равно сумме сопротивлений её элементов
         for (int i = 0; i < this->elements.count(); i++)
         {
-            this->resistance += this->elements[i].resistance;//calculateElemResistance();
+            this->resistance += this->elements[i].getElemResistance();
         }
     }
     // Для сложного последовательного соединения

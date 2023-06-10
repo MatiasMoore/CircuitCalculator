@@ -113,6 +113,11 @@ CircuitElement::CircuitElement(QDomNode node, double frequency)
     }
 }
 
+std::complex<double> CircuitElement::getElemResistance()
+{
+    return this->resistance;
+}
+
 CircuitElement::ElemType CircuitElement::elemTypeFromStr(QString typeStr)
 {
     if (typeStr == "R")
