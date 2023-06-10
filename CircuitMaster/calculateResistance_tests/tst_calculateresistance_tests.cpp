@@ -55,7 +55,7 @@ void calculateResistance_tests::sequential_L()
 {
     auto connectionType = CircuitConnection::ConnectionType::sequential;
     CircuitElement elements[] = {
-        CircuitElement(CircuitElement::ElemType::L, 10)
+        CircuitElement(CircuitElement::ElemType::L, std::complex<double>(0, 10))
     };
 
     CircuitConnection connection(connectionType);
@@ -73,7 +73,7 @@ void calculateResistance_tests::sequential_C()
 {
     auto connectionType = CircuitConnection::ConnectionType::sequential;
     CircuitElement elements[] = {
-        CircuitElement(CircuitElement::ElemType::C, 15)
+        CircuitElement(CircuitElement::ElemType::C, std::complex<double>( 0, -15))
     };
 
     CircuitConnection connection(connectionType);
@@ -92,7 +92,7 @@ void calculateResistance_tests::sequential_RC()
     auto connectionType = CircuitConnection::ConnectionType::sequential;
     CircuitElement elements[] = {
         CircuitElement(CircuitElement::ElemType::R, 5),
-        CircuitElement(CircuitElement::ElemType::C, 15)
+        CircuitElement(CircuitElement::ElemType::C, std::complex<double>(0, -15))
     };
 
     CircuitConnection connection(connectionType);
@@ -110,8 +110,8 @@ void calculateResistance_tests::sequential_LC()
 {
     auto connectionType = CircuitConnection::ConnectionType::sequential;
     CircuitElement elements[] = {
-        CircuitElement(CircuitElement::ElemType::L, 10),
-        CircuitElement(CircuitElement::ElemType::C, 15)
+        CircuitElement(CircuitElement::ElemType::L, std::complex<double>(0, 10)),
+        CircuitElement(CircuitElement::ElemType::C, std::complex<double>(0, -15))
     };
 
     CircuitConnection connection(connectionType);
@@ -130,7 +130,7 @@ void calculateResistance_tests::sequential_RL()
     auto connectionType = CircuitConnection::ConnectionType::sequential;
     CircuitElement elements[] = {
         CircuitElement(CircuitElement::ElemType::R, 5),
-        CircuitElement(CircuitElement::ElemType::L, 10)
+        CircuitElement(CircuitElement::ElemType::L, std::complex<double>(0, 10))
     };
 
     CircuitConnection connection(connectionType);
@@ -168,7 +168,7 @@ void calculateResistance_tests::parallel_RC()
     auto connectionType = CircuitConnection::ConnectionType::parallel;
     CircuitConnection children[] = {
         CircuitConnection(CircuitConnection::ConnectionType::sequential, CircuitElement(CircuitElement::ElemType::R, 5)),
-        CircuitConnection(CircuitConnection::ConnectionType::sequential, CircuitElement(CircuitElement::ElemType::C, 15))
+        CircuitConnection(CircuitConnection::ConnectionType::sequential, CircuitElement(CircuitElement::ElemType::C, std::complex<double>(0, -15)))
     };
 
     CircuitConnection connection(connectionType);
@@ -186,8 +186,8 @@ void calculateResistance_tests::parallel_LC()
 {
     auto connectionType = CircuitConnection::ConnectionType::parallel;
     CircuitConnection children[] = {
-        CircuitConnection(CircuitConnection::ConnectionType::sequential, CircuitElement(CircuitElement::ElemType::L, 10)),
-        CircuitConnection(CircuitConnection::ConnectionType::sequential, CircuitElement(CircuitElement::ElemType::C, 15))
+        CircuitConnection(CircuitConnection::ConnectionType::sequential, CircuitElement(CircuitElement::ElemType::L, std::complex<double>(0, 10))),
+        CircuitConnection(CircuitConnection::ConnectionType::sequential, CircuitElement(CircuitElement::ElemType::C, std::complex<double>(0, -15)))
     };
 
     CircuitConnection connection(connectionType);
@@ -206,7 +206,7 @@ void calculateResistance_tests::parallel_RL()
     auto connectionType = CircuitConnection::ConnectionType::parallel;
     CircuitConnection children[] = {
         CircuitConnection(CircuitConnection::ConnectionType::sequential, CircuitElement(CircuitElement::ElemType::R, 5)),
-        CircuitConnection(CircuitConnection::ConnectionType::sequential, CircuitElement(CircuitElement::ElemType::L, 10))
+        CircuitConnection(CircuitConnection::ConnectionType::sequential, CircuitElement(CircuitElement::ElemType::L, std::complex<double>(0, 10)))
     };
 
     CircuitConnection connection(connectionType);
@@ -376,7 +376,7 @@ void calculateResistance_tests::complexTest2()
 
     CircuitConnection seq1(CircuitConnection::ConnectionType::sequential);
     CircuitElement elements[] = {
-        CircuitElement(CircuitElement::ElemType::L, 3),
+        CircuitElement(CircuitElement::ElemType::L, std::complex<double>(0, 3)),
         CircuitElement(CircuitElement::ElemType::R, 4)
     };
     for (int i = 0; i < sizeof(elements) / sizeof(elements[0]); i++)
@@ -395,7 +395,7 @@ void calculateResistance_tests::complexTest2()
 
     CircuitConnection seq2(CircuitConnection::ConnectionType::sequential);
     CircuitElement elements2[] = {
-        CircuitElement(CircuitElement::ElemType::C, 6),
+        CircuitElement(CircuitElement::ElemType::C, std::complex<double>(0, -6)),
         CircuitElement(CircuitElement::ElemType::R, 7)
     };
     for (int i = 0; i < sizeof(elements2) / sizeof(elements2[0]); i++)
@@ -407,7 +407,7 @@ void calculateResistance_tests::complexTest2()
     CircuitConnection par_1(CircuitConnection::ConnectionType::parallel);
     CircuitConnection par_1children[] = {
         CircuitConnection(CircuitConnection::ConnectionType::sequential, CircuitElement(CircuitElement::ElemType::R, 9)),
-        CircuitConnection(CircuitConnection::ConnectionType::sequential, CircuitElement(CircuitElement::ElemType::C, 10))
+        CircuitConnection(CircuitConnection::ConnectionType::sequential, CircuitElement(CircuitElement::ElemType::C, std::complex<double>(0, -10)))
     };
     for (int i = 0; i < sizeof(par_1children) / sizeof(par_1children[0]); i++)
         par_1.addChild(&par_1children[i]);
