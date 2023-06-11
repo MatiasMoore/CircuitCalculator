@@ -25,39 +25,62 @@ CircuitElement::CircuitElement(QDomNode node, double frequency)
 
     // Обработка ошибок ввода
     QString lineNumStr = QString::number(node.lineNumber());
+
+    QString elemTag = node.toElement().tagName();
+    if (elemTag != "elem")
+        throw QString("На строке %1 ожидался тэг элемента \"<elem>\", а был получен тэг \"<%2>\"").arg(lineNumStr, elemTag);
+
     switch (this->type){
     case CircuitElement::ElemType::invalid:
         throw QString("Неверный тип элемента на строке %1. Допустимые типы: \"R\", \"L\", \"C\"").arg(lineNumStr);
         break;
     case CircuitElement::ElemType::R:
         if (!inductivityElem.isNull())
-            throw QString("Для резистора на строке %1 недопустимо указание индуктивности \"<ind>\". Допускается только указание сопротивления \"<res>\"").arg(lineNumStr);
+            throw QString("Для резистора на строке %1 недопустимо указание индуктивности \"<ind>\". "
+                          "Допускается только указание сопротивления \"<res>\"").arg(lineNumStr);
         if (!capacityElem.isNull())
-            throw QString("Для резистора на строке %1 недопустимо указание емкости \"<cap>\". Допускается только указание сопротивления \"<res>\"").arg(lineNumStr);
+            throw QString("Для резистора на строке %1 недопустимо указание емкости \"<cap>\". "
+                          "Допускается только указание сопротивления \"<res>\"").arg(lineNumStr);
         if (resistanceElem.isNull())
-            throw QString("Для резистора на строке %1 не указаны данные о сопротивлении. Необходимо указание сопротивления \"<res>\"").arg(lineNumStr);
+            throw QString("Для резистора на строке %1 не указаны данные о сопротивлении. "
+                          "Необходимо указание сопротивления \"<res>\"").arg(lineNumStr);
         break;
     case CircuitElement::ElemType::L:
         if (!capacityElem.isNull())
-            throw QString("Для катушки индуктивности на строке %1 недопустимо указание емкости \"<cap>\". Допускается указание сопротивления \"<res>\" или индуктивности \"<ind>\"").arg(lineNumStr);
+            throw QString("Для катушки индуктивности на строке %1 недопустимо указание емкости \"<cap>\". "
+                          "Допускается указание сопротивления \"<res>\" или индуктивности \"<ind>\"").arg(lineNumStr);
         if (!inductivityElem.isNull() && !resistanceElem.isNull())
-            throw QString("Для катушки индуктивности на строке %1 указано и сопротивление \"<res>\", и индуктивность \"<ind>\". Допускается указание только одного из них").arg(lineNumStr);
+            throw QString("Для катушки индуктивности на строке %1 указано и сопротивление \"<res>\", и индуктивность \"<ind>\". "
+                          "Допускается указание только одного из них").arg(lineNumStr);
         if (inductivityElem.isNull() && resistanceElem.isNull())
-            throw QString("Для катушки индуктивности на строке %1 не указаны данные о сопротивлении. Необходимо указание сопротивления \"<res>\" или индуктивности \"<ind>\"").arg(lineNumStr);
+            throw QString("Для катушки индуктивности на строке %1 не указаны данные о сопротивлении. "
+                          "Необходимо указание сопротивления \"<res>\" или индуктивности \"<ind>\"").arg(lineNumStr);
         if (!isFrequencyKnown && !inductivityElem.isNull())
-            throw QString("Для катушки индуктивности на строке %1 указана индуктивность \"<ind>\", однако неизвестна частота переменного тока. Укажите сопротивления элемента \"<res>\" или частоту \"frequency\" как атрибут корневого элемента цепи").arg(lineNumStr);
+            throw QString("Для катушки индуктивности на строке %1 указана индуктивность \"<ind>\", однако "
+                          "неизвестна частота переменного тока. Укажите сопротивления элемента \"<res>\" или "
+                          "частоту \"frequency\" как атрибут корневого элемента цепи").arg(lineNumStr);
         break;
     case CircuitElement::ElemType::C:
         if (!inductivityElem.isNull())
-            throw QString("Для конденсатора на строке %1 недопустимо указание индуктивности \"<ind>\". Допускается указание сопротивления \"<res>\" или емкости \"<cap>\"").arg(lineNumStr);
+            throw QString("Для конденсатора на строке %1 недопустимо указание индуктивности \"<ind>\". "
+                          "Допускается указание сопротивления \"<res>\" или емкости \"<cap>\"").arg(lineNumStr);
         if (!capacityElem.isNull() && !resistanceElem.isNull())
-            throw QString("Для конденсатора индуктивности на строке %1 указано и сопротивление \"<res>\", и индуктивность \"<ind>\". Допускается указание только одного из них").arg(lineNumStr);
+            throw QString("Для конденсатора индуктивности на строке %1 указано и сопротивление \"<res>\", и индуктивность \"<ind>\". "
+                          "Допускается указание только одного из них").arg(lineNumStr);
         if (capacityElem.isNull() && resistanceElem.isNull())
-            throw QString("Для конденсатора на строке %1 не указаны данные о сопротивлении. Необходимо указание сопротивления \"<res>\" или емкости \"<cap>\"").arg(lineNumStr);
+            throw QString("Для конденсатора на строке %1 не указаны данные о сопротивлении. Необходимо указание "
+                          "сопротивления \"<res>\" или емкости \"<cap>\"").arg(lineNumStr);
         if (!isFrequencyKnown && !capacityElem.isNull())
-            throw QString("Для конденсатора на строке %1 указана емкость \"<cap>\", однако неизвестна частота переменного тока. Укажите сопротивления элемента \"<res>\" или частоту \"frequency\" как атрибут корневого элемента цепи").arg(lineNumStr);
+            throw QString("Для конденсатора на строке %1 указана емкость \"<cap>\", однако неизвестна частота "
+                          "переменного тока. Укажите сопротивления элемента \"<res>\" или частоту \"frequency\" как атрибут корневого элемента цепи").arg(lineNumStr);
         break;
     }
+
+
+    int expectedChildCount = !typeElem.isNull() + !resistanceElem.isNull() + !inductivityElem.isNull() + !capacityElem.isNull();
+    if (node.childNodes().count() != expectedChildCount)
+        throw QString("Количество тэгов элемента на строке %1 не соответсвует ожидаемому. "
+                      "Возможно использованы неизвестные тэги или какой-то из тэгов написан несколько раз").arg(lineNumStr);
 
     // Получение значений и обработка ошибок конвертации
     double inductivity = 0, capacity = 0, resistance = 0;
