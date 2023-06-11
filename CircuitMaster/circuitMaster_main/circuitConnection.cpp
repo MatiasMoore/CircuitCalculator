@@ -149,16 +149,14 @@ CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<QString, Cir
         throw QString("Неизвестный тэг элемента на строке %1").arg(QString::number(element.lineNumber()));
 
     // Создаём новый объект соединения
-    CircuitConnection newCircuit;
-
-    // Присваеваем ему уникальный id
-    int newId = map.keys().count() + 1;
-    newCircuit.id = newId;
+    CircuitConnection newCircuit;    
 
     // Получаем название соединения
     QString newName = element.attribute("name", "");
+    // Создаем имя, если не указано пользователем
     if (newName == "")
     {
+        int newId = map.keys().count() + 1;
         newName = QString::number(newId);
         newCircuit.hasCustomName = false;
     }
