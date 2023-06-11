@@ -118,7 +118,7 @@ CircuitElement::CircuitElement(QDomNode node, double frequency)
     }
 }
 
-std::complex<double> CircuitElement::getElemResistance()
+std::complex<double> CircuitElement::getElemResistance() const
 {
     return this->resistance;
 }

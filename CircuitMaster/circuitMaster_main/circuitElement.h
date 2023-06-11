@@ -51,7 +51,7 @@ class CircuitElement
     * \brief Получить комплексное сопротивление элемента
     * \return - комплексное сопротивление элемента
     */
-    std::complex<double> getElemResistance();
+    std::complex<double> getElemResistance() const;
 
     /*!
     * \brief Получить тип элемента на основе его текстового представления
