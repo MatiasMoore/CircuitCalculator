@@ -36,9 +36,9 @@ class CircuitElement
     CircuitElement(ElemType startType, std::complex<double> startValue);
 
     /*!
-    * \brief Конструктор соединения определенного типа с известным сопротивлением
-    * \param[in] startType - тип соединения
-    * \param[in] startResistance - сопротивление соединения
+    * \brief Конструктор соединения на основе элемента xml файла
+    * \param[in] node - элемент xml файла тэга \c <elem>
+    * \param[in] frequency - частота переменного тока, если указана индуктивность или емкость. Если частота неизвестна, передавать -1
     */
     CircuitElement(QDomNode node, double frequency);
 
