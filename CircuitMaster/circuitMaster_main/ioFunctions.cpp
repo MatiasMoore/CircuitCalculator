@@ -7,14 +7,20 @@
 
 QString complexToStr(std::complex<double> num)
 {
+    // Основные переменные
     QString str;
     double real = num.real();
     double imag = num.imag();
+
+    // Если нет мнимой части
     if (imag == 0)
         str = QString::number(real);
+    // Если есть мнимая часть
     else
     {
+        // Знак между дейтвительной и мнимой частью
         QString sign = imag > 0 ? "+" : "-";
+
         str = QString("%1 %2 %3i").arg(QString::number(real), sign, QString::number(abs(imag)));
     }
     return str;
