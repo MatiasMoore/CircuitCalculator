@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
     if (argc != 3)
     {
         printf("Неверное количество аргументов.\n");
-        return 0;
+        return 1;
     }
 
     //Пути для входного и выходного файла получаем как аргументы командной строки
@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
     } catch (QString str) {
         //В случае ошибки вывести её в консоль и завершить выполнение программы
         puts(str.toStdString().c_str());
-        return 0;
+        return 1;
     }
 
     return 0;
