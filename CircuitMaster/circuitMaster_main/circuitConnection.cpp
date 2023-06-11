@@ -147,7 +147,8 @@ CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<QString, Cir
 
     //Обработка ошибок
     if (nodeType == "elem")
-        throw QString("Неверное расположение элемента цепи на строке %1. Элементы могут располагаться только внутри простых последовательных соединений").arg(QString::number(element.lineNumber()));
+        throw QString("Неверное расположение элемента цепи на строке %1. Элементы могут "
+                      "располагаться только внутри простых последовательных соединений").arg(QString::number(element.lineNumber()));
 
     if (nodeType != "seq" && nodeType != "par")
         throw QString("Неизвестный тэг на строке %1").arg(QString::number(element.lineNumber()));
@@ -175,7 +176,8 @@ CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<QString, Cir
     for (int i = 0; i < usedNames.count(); i++)
     {
         if (usedNames[i] == newName)
-            throw QString("Имя соединения должно быть уникальным. Повтор имени соединения на строке %1.").arg(QString::number(element.lineNumber()));
+            throw QString("Имя соединения должно быть уникальным. Повтор имени "
+                          "соединения на строке %1.").arg(QString::number(element.lineNumber()));
     }
 
     // Получаем значение напряжения, если указано
@@ -201,6 +203,10 @@ CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<QString, Cir
     // Для сложного последовательного соединения
     if (circuitType == CircuitConnection::ConnectionType::sequentialComplex || circuitType == CircuitConnection::ConnectionType::parallel)
     {
+        if (children.isEmpty())
+        {
+            throw QString("Пустое соединение на строке %1").arg(QString::number(element.lineNumber()));
+        }
         // Рекурсивно обрабатываем каждого ребёнка текущей цепи
         for(int i = 0; i < children.count(); i++)
             circuit->addChild(connectionFromDocElement(map, children.at(i), frequency));
