@@ -95,9 +95,7 @@ void CircuitConnection::calculateCurrentAndVoltage()
     }
 
     if (!this->isCurrentSet && !this->isVoltageSet)
-    {
-        throw QString("Unknown voltage and current without parent element");
-    }
+        throw QString("Недостаточно данных для вычисления силы тока и напряжения в соединении %1.").arg(this->name);
 
     // Вычисляем оставшуюся неизвестную величину
     if (!this->isCurrentSet)
