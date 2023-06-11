@@ -55,29 +55,24 @@ std::complex<double> CircuitConnection::calculateResistance()
     if (this->type == ConnectionType::sequential)
     {
         // Сопротивление цепи равно сумме сопротивлений её элементов
-        for (int i = 0; i < this->elements.count(); i++)
-        {
-            this->resistance += this->elements[i].getElemResistance();
-        }
+        for (auto iter = this->elements.cbegin(); iter != this->elements.cend(); iter++)
+            this->resistance += iter->getElemResistance();
     }
     // Для сложного последовательного соединения
     else if(this->type == ConnectionType::sequentialComplex)
     {
         // Сопротивление цепи равно сумме сопротивлений её соединений-детей
-        for (int i = 0; i < this->children.count(); i++)
-        {
-            this->resistance += this->children[i]->calculateResistance();
-        }
+        for (auto iter = this->children.begin(); iter != this->children.end(); iter++)
+            this->resistance += (*iter)->calculateResistance();
     }
     // Для параллельного соединения
     else if (this->type == ConnectionType::parallel)
     {
         // Находим сумму обратных значений сопротивления соединений-детей
         std::complex<double> reverseSum = 0;
-        for (int i = 0; i < this->children.count(); i++)
-        {
-            reverseSum += 1.0 / this->children[i]->calculateResistance();
-        }
+        for (auto iter = this->children.begin(); iter != this->children.end(); iter++)
+            reverseSum += 1.0 / (*iter)->calculateResistance();
+
         // Находим сопротивление параллельной цепи
         this->resistance = 1.0 / reverseSum;
     }
@@ -115,11 +110,8 @@ void CircuitConnection::calculateCurrentAndVoltage()
     bool hasChildren = this->children.count() != 0;
     if (hasChildren)
     {
-        for(int i = 0; i < this->children.count(); i++)
-        {
-            CircuitConnection* child = this->children[i];
-            child->calculateCurrentAndVoltage();
-        }
+        for (auto iter = this->children.begin(); iter != this->children.end(); iter++)
+            (*iter)->calculateCurrentAndVoltage();
     }
 
 }
