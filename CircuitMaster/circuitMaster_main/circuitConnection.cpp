@@ -146,10 +146,10 @@ CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<QString, Cir
     //Обработка ошибок
     if (nodeType == "elem")
         throw QString("Неверное расположение элемента цепи на строке %1. Элементы могут "
-                      "располагаться только внутри простых последовательных соединений").arg(QString::number(element.lineNumber()));
+                      "располагаться только внутри простых последовательных соединений.").arg(QString::number(element.lineNumber()));
 
     if (nodeType != "seq" && nodeType != "par")
-        throw QString("Неизвестный тэг на строке %1").arg(QString::number(element.lineNumber()));
+        throw QString("Неизвестный тэг на строке %1.").arg(QString::number(element.lineNumber()));
 
     // Создаём новый объект соединения
     CircuitConnection newCircuit;    
@@ -203,7 +203,7 @@ CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<QString, Cir
     {
         if (children.isEmpty())
         {
-            throw QString("Пустое соединение на строке %1").arg(QString::number(element.lineNumber()));
+            throw QString("Пустое соединение на строке %1.").arg(QString::number(element.lineNumber()));
         }
         // Рекурсивно обрабатываем каждого ребёнка текущей цепи
         for(int i = 0; i < children.count(); i++)
@@ -214,7 +214,7 @@ CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<QString, Cir
     {
         if (children.isEmpty())
         {
-            throw QString("Отсутсвуют элементы соединения на строке %1").arg(QString::number(element.lineNumber()));
+            throw QString("Отсутсвуют элементы соединения на строке %1.").arg(QString::number(element.lineNumber()));
         }
         // Добавляем все элементы в соединение
         for(int i = 0; i < children.count(); i++)

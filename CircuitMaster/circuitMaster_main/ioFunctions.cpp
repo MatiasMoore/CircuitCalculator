@@ -96,12 +96,12 @@ void readInputFromFile(QString inputPath, QMap<QString, CircuitConnection>& circ
             // Ошибка, если указано напряжение
             if (connectionElement.attribute("voltage", "").length() != 0)
                 throw QString("Неверное указание напряжения цепи на строке %1. "
-                              "Напряжение указывается только для корневого элемента схемы").arg(QString::number(connectionElement.lineNumber()));
+                              "Напряжение указывается только для корневого элемента схемы.").arg(QString::number(connectionElement.lineNumber()));
 
             // Ошибка, если указана частота
             if (connectionElement.attribute("frequency", "").length() != 0)
                 throw QString("Неверное указание частоты переменного тока на строке %1. "
-                              "Частота указывается только для корневого элемента схемы").arg(QString::number(connectionElement.lineNumber()));
+                              "Частота указывается только для корневого элемента схемы.").arg(QString::number(connectionElement.lineNumber()));
         }
     }
 
