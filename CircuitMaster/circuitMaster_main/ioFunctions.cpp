@@ -48,7 +48,7 @@ void readInputFromFile(QString inputPath, QMap<QString, CircuitConnection>& circ
     // Ошибка, если не удалось создать QDomDoc
     if (!domDocument.setContent(&xmlFile, &errorMes, &errorLine))
     {
-        throw QString("%1 at line %2").arg(errorMes, QString::number(errorLine));
+        throw QString("Получена ошибка QDomDoc при открытии xml файла: \"%1\" на строке %2.").arg(errorMes, QString::number(errorLine));
     }
 
     // Закрываем файл, по завершении работы
