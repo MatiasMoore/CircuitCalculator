@@ -2,6 +2,7 @@
 #define CIRCUITELEMENT_H
 #include <complex>
 #include <QString>
+#include <QStringList>
 #include <QtXml/QDomDocument>
 
 /*!
@@ -45,6 +46,45 @@ class CircuitElement
     private:
     std::complex<double> resistance; /*!< Комплексное сопротивление элемента */
     ElemType type; /*!< Тип элемента */
+
+    CircuitElement resistorFromNode(QDomNode node)
+    {
+        QDomElement typeElem = node.firstChildElement("type");
+        QDomElement resistanceElem = node.firstChildElement("res");
+
+        QString lineNumStr = QString::number(node.lineNumber());
+        QStringList unexpectedTags;
+        auto children = node.childNodes();
+        for (int i = 0; i < children.count(); i++)
+        {
+            QString childTag = children.at(i).toElement().tagName();
+            if (childTag != "type" && childTag != "res")
+                unexpectedTags.a
+        }
+
+        if (unexpectedTags.count() > 0)
+            throw QString("У резистора на строке %1 присутствуют недопустимые тэги %2. "
+                          "Для резистора допустимо указание типа \"<type>\" и сопротивления \"<res>\"").arg(lineNumStr);
+    }
+
+    CircuitElement coilFromNode(QDomNode node, double frequency)
+    {
+        bool isFrequencyKnown = frequency != -1;
+        QDomElement typeElem = node.firstChildElement("type");
+        QDomElement resistanceElem = node.firstChildElement("res");
+        QDomElement inductivityElem = node.firstChildElement("ind");
+        QDomElement capacityElem = node.firstChildElement("cap");
+    }
+
+    CircuitElement capacitorFromNode(QDomNode node, double frequency)
+    {
+        bool isFrequencyKnown = frequency != -1;
+        QDomElement typeElem = node.firstChildElement("type");
+        QDomElement resistanceElem = node.firstChildElement("res");
+        QDomElement inductivityElem = node.firstChildElement("ind");
+        QDomElement capacityElem = node.firstChildElement("cap");
+    }
+
 
     public:
     /*!
