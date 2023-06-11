@@ -3,8 +3,12 @@
 #include "../circuitMaster_main/ioFunctions.h"
 #include "../circuitMaster_main/circuitConnection.h"
 #include "../circuitMaster_main/circuitElement.h"
-// add necessary includes here
-//const QString testsDirPath = "F:\\aeyy\\a_lab_projects\\CircuitMaster\\tests";
+
+/*!
+*\file
+*\brief Тесты для создания соединения на основе xml файла
+*/
+
 const QString testsDirPath = "tests";
 class connectionFromDocElement_tests : public QObject
 {

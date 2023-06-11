@@ -3,7 +3,11 @@
 #include "../circuitMaster_main/ioFunctions.h"
 #include "../circuitMaster_main/circuitConnection.h"
 #include "../circuitMaster_main/circuitElement.h"
-// add necessary includes here
+
+/*!
+*\file
+*\brief Тесты для вычисления сопротивления соединений цепи
+*/
 
 class calculateResistance_tests : public QObject
 {

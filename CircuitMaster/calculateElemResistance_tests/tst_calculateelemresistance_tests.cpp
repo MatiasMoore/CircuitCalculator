@@ -4,7 +4,11 @@
 #include "../circuitMaster_main/circuitConnection.h"
 #include "../circuitMaster_main/circuitElement.h"
 
-// add necessary includes here
+/*!
+*\file
+*\brief Тесты для вычисления сопротивления элементов цепи
+*/
+
 const QString testsDirPath = "tests";
 
 class calculateElemResistance_tests : public QObject
