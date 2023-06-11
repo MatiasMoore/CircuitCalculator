@@ -75,7 +75,7 @@ void readInputFromFile(QString inputPath, QMap<QString, CircuitConnection>& circ
         bool convertedOk;
         frequency = frequencyStr.toDouble(&convertedOk);
 
-        // Ошибка, если не удалость конверертировать
+        // Ошибка, если не удалось конверертировать
         if (!convertedOk)
             throw QString("Неверный формат значения частоты у корневого элемента.");
     }
@@ -111,23 +111,31 @@ void readInputFromFile(QString inputPath, QMap<QString, CircuitConnection>& circ
 
 void writeOutputToFile(QString outputPath, QMap<QString, CircuitConnection>& circuitMap)
 {
+    // Создаем QFile на основе пути
     QFile outFile(outputPath);
+
+    // Попытатья открыть файл
+    // Ошибка, если не удалось открыть
     if (!outFile.open(QFile::WriteOnly | QFile::Text)) {
         throw QString("Неверно указан файл для выходных данных. Возможно указанного расположения не существует или нет прав на запись.");
     }
 
-    auto keyIter = circuitMap.keyBegin();
-
-    while (keyIter != circuitMap.keyEnd())
+    // Для каждого соединения
+    for (auto keyIter = circuitMap.keyBegin(); keyIter != circuitMap.keyEnd(); keyIter++)
     {
-        CircuitConnection& currCirc = circuitMap[*keyIter];
-        if (currCirc.hasCustomName)
+        CircuitConnection& currentConnection = circuitMap[*keyIter];
+
+        // Если имя указано пользователем
+        if (currentConnection.hasCustomName)
         {
-            QString outLine = QString("%1 = %2\n").arg(currCirc.name, complexToStr(currCirc.current));
+            // Формируем строку вывода
+            QString outLine = QString("%1 = %2\n").arg(*keyIter, complexToStr(currentConnection.current));
+
+            // Записываем в файл
             outFile.write(outLine.toStdString().c_str());
         }
-        keyIter++;
     }
 
+    // Закрываем файл
     outFile.close();
 }
