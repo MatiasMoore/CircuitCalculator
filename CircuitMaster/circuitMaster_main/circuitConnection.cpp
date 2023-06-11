@@ -145,8 +145,12 @@ CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<QString, Cir
     QString nodeType = element.tagName();
     QDomNodeList children = node.childNodes();
 
+    //Обработка ошибок
+    if (nodeType == "elem")
+        throw QString("Неверное расположение элемента цепи на строке %1. Элементы могут располагаться только внутри простых последовательных соединений").arg(QString::number(element.lineNumber()));
+
     if (nodeType != "seq" && nodeType != "par")
-        throw QString("Неизвестный тэг элемента на строке %1").arg(QString::number(element.lineNumber()));
+        throw QString("Неизвестный тэг на строке %1").arg(QString::number(element.lineNumber()));
 
     // Создаём новый объект соединения
     CircuitConnection newCircuit;    
@@ -199,13 +203,7 @@ CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<QString, Cir
     {
         // Рекурсивно обрабатываем каждого ребёнка текущей цепи
         for(int i = 0; i < children.count(); i++)
-        {
-            CircuitConnection* currChildPtr = connectionFromDocElement(map, children.at(i), frequency);
-            if (currChildPtr != NULL)
-            {
-                circuit->addChild(currChildPtr);
-            }
-        }
+            circuit->addChild(connectionFromDocElement(map, children.at(i), frequency));
     }
     // Для простого последовательного соединения
     else if (circuitType == CircuitConnection::ConnectionType::sequential)
