@@ -152,7 +152,7 @@ CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<QString, Cir
         throw QString("Неизвестный тэг на строке %1.").arg(QString::number(element.lineNumber()));
 
     // Создаём новый объект соединения
-    CircuitConnection newCircuit;    
+    CircuitConnection newConnection;
 
     // Получаем название соединения
     QString newName = element.attribute("name", "");
@@ -161,13 +161,13 @@ CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<QString, Cir
     {
         int newId = map.keys().count() + 1;
         newName = QString::number(newId);
-        newCircuit.hasCustomName = false;
+        newConnection.hasCustomName = false;
     }
     else
     {
-        newCircuit.hasCustomName = true;
+        newConnection.hasCustomName = true;
     }
-    newCircuit.name = newName;
+    newConnection.name = newName;
 
     // Проверяем имя на уникальность
     QList<QString> usedNames = map.keys();
@@ -181,13 +181,13 @@ CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<QString, Cir
     // Получаем значение напряжения, если указано
     double voltageAtr = element.attribute("voltage", "-1").toDouble();
      if (voltageAtr != -1)
-         newCircuit.setVoltage(voltageAtr);
+         newConnection.setVoltage(voltageAtr);
 
     // Добавляем объект в QMap всех соединений цепи
-    map.insert(newName, newCircuit);
+    map.insert(newName, newConnection);
 
     // Указатель на новый объект соединения в QMap для дальнейшего его заполнения
-    CircuitConnection* circuit = &map[newName];
+    CircuitConnection* newConnectionPtr = &map[newName];
 
     // Определить тип соединения
     CircuitConnection::ConnectionType circuitType = CircuitConnection::strToConnectionType(nodeType);
@@ -196,7 +196,7 @@ CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<QString, Cir
     if (circuitType == CircuitConnection::ConnectionType::sequential && (hasSeqInside || hasParInside))
         circuitType = CircuitConnection::ConnectionType::sequentialComplex;
 
-    circuit->type = circuitType;
+    newConnectionPtr->type = circuitType;
 
     // Для сложного последовательного соединения
     if (circuitType == CircuitConnection::ConnectionType::sequentialComplex || circuitType == CircuitConnection::ConnectionType::parallel)
@@ -207,7 +207,7 @@ CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<QString, Cir
         }
         // Рекурсивно обрабатываем каждого ребёнка текущей цепи
         for(int i = 0; i < children.count(); i++)
-            circuit->addChild(connectionFromDocElement(map, children.at(i), frequency));
+            newConnectionPtr->addChild(connectionFromDocElement(map, children.at(i), frequency));
     }
     // Для простого последовательного соединения
     else if (circuitType == CircuitConnection::ConnectionType::sequential)
@@ -219,9 +219,9 @@ CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<QString, Cir
         // Добавляем все элементы в соединение
         for(int i = 0; i < children.count(); i++)
         {
-            circuit->addElement(CircuitElement(children.at(i), frequency));
+            newConnectionPtr->addElement(CircuitElement(children.at(i), frequency));
         }
     }
-    return circuit;
+    return newConnectionPtr;
 }
 
