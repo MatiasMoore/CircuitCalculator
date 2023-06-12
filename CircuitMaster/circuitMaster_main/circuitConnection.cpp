@@ -99,10 +99,9 @@ void CircuitConnection::calculateCurrentAndVoltage()
 
     // Вычисляем оставшуюся неизвестную величину
     if (!this->isCurrentSet)
-        this->current = this->voltage / this->resistance;
+        this->setCurrent(this->voltage / this->resistance);
     else if (!this->isVoltageSet)
-        this->voltage = this->current * this->resistance;
-
+        this->setVoltage(this->current * this->resistance);
 
     // Рекурсивно вычисляем силу тока и напряжение всех детей, если они имеются
     bool hasChildren = this->children.count() != 0;
