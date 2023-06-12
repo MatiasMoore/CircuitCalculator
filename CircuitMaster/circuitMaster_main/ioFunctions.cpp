@@ -89,6 +89,9 @@ void readInputFromFile(QString inputPath, QMap<QString, CircuitConnection>& circ
     QDomNodeList parConnections = rootElement.elementsByTagName("par");
     auto conns = { seqConnections, parConnections};
 
+    // Использованные имена с номером строки
+    QMap<QString, int> usedNames;
+
     // Обработка ошибок связанных с указанием напряжения или частоты у других соединений
     for (auto connGroup = conns.begin(); connGroup != conns.end(); connGroup++)
     {
@@ -106,6 +109,16 @@ void readInputFromFile(QString inputPath, QMap<QString, CircuitConnection>& circ
             if (connectionElement.attribute("frequency", "").length() != 0)
                 throw QString("Неверное указание частоты переменного тока на строке %1. "
                               "Частота указывается только для корневого элемента схемы.").arg(QString::number(connectionElement.lineNumber()));
+
+            // Проверка уникальности имен соединений
+            QString connectionName = connectionElement.attribute("name", "");
+            if (connectionName != "")
+            {
+                if (usedNames.keys().contains(connectionName))
+                    throw QString("Повтор имени соединения на строке %1 и строке %2. Имя соединения должно быть "
+                                  "уникальным.").arg(QString::number(usedNames[connectionName]), QString::number(connectionElement.lineNumber()));
+                usedNames[connectionName] = connectionElement.lineNumber();
+            }
         }
     }
 

@@ -178,15 +178,6 @@ CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<QString, Cir
     }
     newConnection.name = newName;
 
-    // Проверяем имя на уникальность
-    QList<QString> usedNames = map.keys();
-    for (int i = 0; i < usedNames.count(); i++)
-    {
-        if (usedNames[i] == newName)
-            throw QString("Имя соединения должно быть уникальным. Повтор имени "
-                          "соединения на строке %1.").arg(QString::number(element.lineNumber()));
-    }
-
     // Получаем значение напряжения, если указано
     double voltageAtr = element.attribute("voltage", "-1").toDouble();
      if (voltageAtr != -1)
