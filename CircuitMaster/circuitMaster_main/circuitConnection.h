@@ -110,9 +110,9 @@ class CircuitConnection
 
     /*!
     * \brief Добавить соединение-ребенка
-    * \param[in] newChildCircuit - указатель на соединение-ребенка
+    * \param[in] newChildConnectionPtr - указатель на соединение-ребенка
     */
-    void addChild(CircuitConnection* newChildCircuit);
+    void addChild(CircuitConnection* newChildConnectionPtr);
 
     /*!
     * \brief Получить тип соединение на основе его текстового представления

@@ -128,10 +128,10 @@ void CircuitConnection::addElement(CircuitElement const & newElem)
     this->elements.append(newElem);
 }
 
-void CircuitConnection::addChild(CircuitConnection* newChildCircuit)
+void CircuitConnection::addChild(CircuitConnection* newChildConnectionPtr)
 {
-    this->children.append(newChildCircuit);
-    newChildCircuit->parent = this;
+    this->children.append(newChildConnectionPtr);
+    newChildConnectionPtr->parent = this;
 }
 
 CircuitConnection::ConnectionType CircuitConnection::strToConnectionType(QString const & strType)
@@ -213,10 +213,10 @@ CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<int, Circuit
     // Для сложного последовательного соединения
     if (circuitType == CircuitConnection::ConnectionType::sequentialComplex || circuitType == CircuitConnection::ConnectionType::parallel)
     {
+        // Ошибка, если нет соединений-детей
         if (children.isEmpty())
-        {
             throw QString("Пустое соединение на строке %1.").arg(elementLineNumStr);
-        }
+
         // Рекурсивно обрабатываем каждого ребёнка текущей цепи
         for(int i = 0; i < children.count(); i++)
             newConnectionPtr->addChild(connectionFromDocElement(map, children.at(i), frequency));
@@ -224,16 +224,17 @@ CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<int, Circuit
     // Для простого последовательного соединения
     else if (circuitType == CircuitConnection::ConnectionType::sequential)
     {
+        // Ошибка, если нет элементов
         if (children.isEmpty())
-        {
             throw QString("Отсутсвуют элементы соединения на строке %1.").arg(elementLineNumStr);
-        }
+
         // Добавляем все элементы в соединение
         for(int i = 0; i < children.count(); i++)
         {
             newConnectionPtr->addElement(CircuitElement(children.at(i), frequency));
         }
     }
+
     return newConnectionPtr;
 }
 
