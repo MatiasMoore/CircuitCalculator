@@ -146,7 +146,7 @@ CircuitConnection::ConnectionType CircuitConnection::strToConnectionType(QString
     return type;
 }
 
-CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<QString, CircuitConnection>& map, QDomNode node, double frequency)
+CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<int, CircuitConnection>& map, QDomNode node, double frequency)
 {
     QDomElement element = node.toElement();
     QString nodeType = element.tagName();
@@ -194,10 +194,10 @@ CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<QString, Cir
      }
 
     // Добавляем объект в QMap всех соединений цепи
-    map.insert(newName, newConnection);
+    map.insert(newId, newConnection);
 
     // Указатель на новый объект соединения в QMap для дальнейшего его заполнения
-    CircuitConnection* newConnectionPtr = &map[newName];
+    CircuitConnection* newConnectionPtr = &map[newId];
 
     // Определить тип соединения
     CircuitConnection::ConnectionType circuitType = CircuitConnection::strToConnectionType(nodeType);

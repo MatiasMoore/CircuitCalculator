@@ -54,7 +54,7 @@ int main(int argc, char *argv[])
     try {
 
         // Создаём дерево соединений схемы
-        QMap<QString, CircuitConnection> circuitMap;
+        QMap<int, CircuitConnection> circuitMap;
         readInputFromFile(inputPath, circuitMap);
 
         // Вычисляем сопротивления для всех соединений рекурсивно

@@ -128,7 +128,7 @@ class CircuitConnection
     * \param[in] frequency - частота перемнного тока, если неизвестна передать значение -1
     * \return - указатель на созданный в map объект класса
     */
-    static CircuitConnection* connectionFromDocElement(QMap<QString, CircuitConnection>& map, QDomNode node, double frequency);
+    static CircuitConnection* connectionFromDocElement(QMap<int, CircuitConnection>& map, QDomNode node, double frequency);
 
 };
 

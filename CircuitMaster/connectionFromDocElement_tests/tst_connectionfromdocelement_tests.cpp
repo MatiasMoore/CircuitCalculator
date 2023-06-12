@@ -47,14 +47,14 @@ private slots:
 //{
 //    QString inputPath = testsDirPath + "\\test1.xml";
 //    qDebug() << inputPath;
-//    QMap<QString, CircuitConnection> circuitMap;
+//    QMap<int, CircuitConnection> circuitMap;
 //    readInputFromFile(inputPath, circuitMap);
 //}
 
 void connectionFromDocElement_tests::incompleteTag()
 {
     QString inputPath = testsDirPath + "\\incompleteTag.xml";
-    QMap<QString, CircuitConnection> circuitMap;
+    QMap<int, CircuitConnection> circuitMap;
     try {
         readInputFromFile(inputPath, circuitMap);
         QVERIFY2(false, "No exception is thrown");
@@ -67,7 +67,7 @@ void connectionFromDocElement_tests::incompleteTag()
 void connectionFromDocElement_tests::invalidElemType()
 {
     QString inputPath = testsDirPath + "\\invalidElemType.xml";
-    QMap<QString, CircuitConnection> circuitMap;
+    QMap<int, CircuitConnection> circuitMap;
     try {
         readInputFromFile(inputPath, circuitMap);
         QVERIFY2(false, "No exception is thrown");
@@ -79,7 +79,7 @@ void connectionFromDocElement_tests::invalidElemType()
 void connectionFromDocElement_tests::incorrectValueFormat()
 {
     QString inputPath = testsDirPath + "\\incorrectValueFormat().xml";
-    QMap<QString, CircuitConnection> circuitMap;
+    QMap<int, CircuitConnection> circuitMap;
     try {
         readInputFromFile(inputPath, circuitMap);
         QVERIFY2(false, "No exception is thrown");
@@ -91,7 +91,7 @@ void connectionFromDocElement_tests::incorrectValueFormat()
 void connectionFromDocElement_tests::noVoltage()
 {
     QString inputPath = testsDirPath + "\\noVoltage.xml";
-    QMap<QString, CircuitConnection> circuitMap;
+    QMap<int, CircuitConnection> circuitMap;
     try {
         readInputFromFile(inputPath, circuitMap);
         QVERIFY2(false, "No exception is thrown");
@@ -103,7 +103,7 @@ void connectionFromDocElement_tests::noVoltage()
 void connectionFromDocElement_tests::elementsInParConnection()
 {
     QString inputPath = testsDirPath + "\\elementsInParConnection.xml";
-    QMap<QString, CircuitConnection> circuitMap;
+    QMap<int, CircuitConnection> circuitMap;
     try {
         readInputFromFile(inputPath, circuitMap);
         QVERIFY2(false, "No exception is thrown");
@@ -115,7 +115,7 @@ void connectionFromDocElement_tests::elementsInParConnection()
 void connectionFromDocElement_tests::invalidElemResistance()
 {
     QString inputPath = testsDirPath + "\\invalidElemResistance.xml";
-    QMap<QString, CircuitConnection> circuitMap;
+    QMap<int, CircuitConnection> circuitMap;
     try {
         readInputFromFile(inputPath, circuitMap);
         QVERIFY2(false, "No exception is thrown");
@@ -127,7 +127,7 @@ void connectionFromDocElement_tests::invalidElemResistance()
 void connectionFromDocElement_tests::simpleSeq()
 {
     QString inputPath = testsDirPath + "\\simpleSeq.xml";
-    QMap<QString, CircuitConnection> circuitMap;
+    QMap<int, CircuitConnection> circuitMap;
 
     try {
         readInputFromFile(inputPath, circuitMap);
@@ -140,16 +140,16 @@ void connectionFromDocElement_tests::simpleSeq()
     expectedSeq.addElement(CircuitElement(CircuitElement::ElemType::R, 1));
     expectedSeq.addElement(CircuitElement(CircuitElement::ElemType::R, 2));
 
-    COMPARE_CONNECTION_TREE(expectedSeq, circuitMap["seq1"]);
+    COMPARE_CONNECTION_TREE(expectedSeq, *circuitMap.begin());
 
-//    CircuitConnection& toCheck = circuitMap["seq1"];
+//    CircuitConnection& toCheck = *circuitMap.begin();
 //    COMPARE_COMPLEX(std::complex<double>(20, 0), toCheck.voltage, 0.001);
 }
 
 void connectionFromDocElement_tests::simpleSeqOneR()
 {
     QString inputPath = testsDirPath + "\\simpleSeqOneR.xml";
-    QMap<QString, CircuitConnection> circuitMap;
+    QMap<int, CircuitConnection> circuitMap;
 
     try {
         readInputFromFile(inputPath, circuitMap);
@@ -161,14 +161,14 @@ void connectionFromDocElement_tests::simpleSeqOneR()
     expectedSeq.setVoltage(20);
     expectedSeq.addElement(CircuitElement(CircuitElement::ElemType::R, 1));
 
-    COMPARE_CONNECTION_TREE(expectedSeq, circuitMap["seq1"]);
+    COMPARE_CONNECTION_TREE(expectedSeq, *circuitMap.begin());
 
 }
 
 void connectionFromDocElement_tests::simpleSeqOneL()
 {
     QString inputPath = testsDirPath + "\\simpleSeqOneL.xml";
-    QMap<QString, CircuitConnection> circuitMap;
+    QMap<int, CircuitConnection> circuitMap;
 
     try {
         readInputFromFile(inputPath, circuitMap);
@@ -180,14 +180,14 @@ void connectionFromDocElement_tests::simpleSeqOneL()
     expectedSeq.setVoltage(20);
     expectedSeq.addElement(CircuitElement(CircuitElement::ElemType::L, std::complex<double>(0, 1)));
 
-    COMPARE_CONNECTION_TREE(expectedSeq, circuitMap["seq1"]);
+    COMPARE_CONNECTION_TREE(expectedSeq, *circuitMap.begin());
 
 }
 
 void connectionFromDocElement_tests::simpleSeqOneC()
 {
     QString inputPath = testsDirPath + "\\simpleSeqOneC.xml";
-    QMap<QString, CircuitConnection> circuitMap;
+    QMap<int, CircuitConnection> circuitMap;
 
     try {
         readInputFromFile(inputPath, circuitMap);
@@ -199,14 +199,14 @@ void connectionFromDocElement_tests::simpleSeqOneC()
     expectedSeq.setVoltage(20);
     expectedSeq.addElement(CircuitElement(CircuitElement::ElemType::C, std::complex<double>(0, -1)));
 
-    COMPARE_CONNECTION_TREE(expectedSeq, circuitMap["seq1"]);
+    COMPARE_CONNECTION_TREE(expectedSeq, *circuitMap.begin());
 
 }
 
 void connectionFromDocElement_tests::simpleSeqRLC()
 {
     QString inputPath = testsDirPath + "\\simpleSeqRLC.xml";
-    QMap<QString, CircuitConnection> circuitMap;
+    QMap<int, CircuitConnection> circuitMap;
 
     try {
         readInputFromFile(inputPath, circuitMap);
@@ -220,13 +220,13 @@ void connectionFromDocElement_tests::simpleSeqRLC()
     expectedSeq.addElement(CircuitElement(CircuitElement::ElemType::L, std::complex<double>(0, 1)));
     expectedSeq.addElement(CircuitElement(CircuitElement::ElemType::C, std::complex<double>(0, -1)));
 
-    COMPARE_CONNECTION_TREE(expectedSeq, circuitMap["seq1"]);
+    COMPARE_CONNECTION_TREE(expectedSeq, *circuitMap.begin());
 }
 
 void connectionFromDocElement_tests::floatResistance()
 {
     QString inputPath = testsDirPath + "\\floatResistance.xml";
-    QMap<QString, CircuitConnection> circuitMap;
+    QMap<int, CircuitConnection> circuitMap;
 
     try {
         readInputFromFile(inputPath, circuitMap);
@@ -237,13 +237,13 @@ void connectionFromDocElement_tests::floatResistance()
     CircuitConnection expectedSeq = CircuitConnection(CircuitConnection::ConnectionType::sequential, "seq1");
     expectedSeq.setVoltage(20);
     expectedSeq.addElement(CircuitElement(CircuitElement::ElemType::R, 1.8));
-    COMPARE_CONNECTION_TREE(expectedSeq, circuitMap["seq1"]);
+    COMPARE_CONNECTION_TREE(expectedSeq, *circuitMap.begin());
 }
 
 void connectionFromDocElement_tests::floatVoltage()
 {
     QString inputPath = testsDirPath + "\\floatVoltage.xml";
-    QMap<QString, CircuitConnection> circuitMap;
+    QMap<int, CircuitConnection> circuitMap;
 
     try {
         readInputFromFile(inputPath, circuitMap);
@@ -255,13 +255,13 @@ void connectionFromDocElement_tests::floatVoltage()
     expectedSeq.setVoltage(20.4);
     expectedSeq.addElement(CircuitElement(CircuitElement::ElemType::R, 1));
 
-    COMPARE_CONNECTION_TREE(expectedSeq, circuitMap["seq1"]);
+    COMPARE_CONNECTION_TREE(expectedSeq, *circuitMap.begin());
 }
 
 void connectionFromDocElement_tests::simplePar()
 {
     QString inputPath = testsDirPath + "\\simplePar.xml";
-    QMap<QString, CircuitConnection> circuitMap;
+    QMap<int, CircuitConnection> circuitMap;
 
     try {
         readInputFromFile(inputPath, circuitMap);
@@ -281,13 +281,13 @@ void connectionFromDocElement_tests::simplePar()
     expectedPar.addChild(&seq1);
     expectedPar.addChild(&seq2);
 
-    COMPARE_CONNECTION_TREE(expectedPar, circuitMap["par1"]);
+    COMPARE_CONNECTION_TREE(expectedPar, *circuitMap.begin());
 }
 
 void connectionFromDocElement_tests::triplePar()
 {
     QString inputPath = testsDirPath + "\\triplePar.xml";
-    QMap<QString, CircuitConnection> circuitMap;
+    QMap<int, CircuitConnection> circuitMap;
 
     try {
         readInputFromFile(inputPath, circuitMap);
@@ -311,13 +311,13 @@ void connectionFromDocElement_tests::triplePar()
     expectedPar.addChild(&seq2);
     expectedPar.addChild(&seq3);
 
-    COMPARE_CONNECTION_TREE(expectedPar, circuitMap["par1"]);
+    COMPARE_CONNECTION_TREE(expectedPar, *circuitMap.begin());
 }
 
 void connectionFromDocElement_tests::twoSeqIn_complexSeq()
 {
     QString inputPath = testsDirPath + "\\twoSeqIn_complexSeq.xml";
-    QMap<QString, CircuitConnection> circuitMap;
+    QMap<int, CircuitConnection> circuitMap;
 
     try {
         readInputFromFile(inputPath, circuitMap);
@@ -337,13 +337,13 @@ void connectionFromDocElement_tests::twoSeqIn_complexSeq()
     expectedSeq.addChild(&seq1);
     expectedSeq.addChild(&seq2);
 
-    COMPARE_CONNECTION_TREE(expectedSeq, circuitMap["seqComplex1"]);
+    COMPARE_CONNECTION_TREE(expectedSeq, *circuitMap.begin());
 }
 
 void connectionFromDocElement_tests::parAndSeqIn_complexSeq()
 {
     QString inputPath = testsDirPath + "\\parAndSeqIn_complexSeq.xml";
-    QMap<QString, CircuitConnection> circuitMap;
+    QMap<int, CircuitConnection> circuitMap;
 
     try {
         readInputFromFile(inputPath, circuitMap);
@@ -371,13 +371,13 @@ void connectionFromDocElement_tests::parAndSeqIn_complexSeq()
     expectedSeq.addChild(&par1);
     expectedSeq.addChild(&seq3);
 
-    COMPARE_CONNECTION_TREE(expectedSeq, circuitMap["seqComplex1"]);
+    COMPARE_CONNECTION_TREE(expectedSeq, *circuitMap.begin());
 }
 
 void connectionFromDocElement_tests::parAndParIn_Par()
 {
     QString inputPath = testsDirPath + "\\parAndParIn_Par.xml";
-    QMap<QString, CircuitConnection> circuitMap;
+    QMap<int, CircuitConnection> circuitMap;
 
     try {
         readInputFromFile(inputPath, circuitMap);
@@ -413,13 +413,13 @@ void connectionFromDocElement_tests::parAndParIn_Par()
     expectedPar.addChild(&par2);
     expectedPar.addChild(&par3);
 
-    COMPARE_CONNECTION_TREE(expectedPar, circuitMap["par1"]);
+    COMPARE_CONNECTION_TREE(expectedPar, *circuitMap.begin());
 }
 
 void connectionFromDocElement_tests::complexTest1()
 {
     QString inputPath = testsDirPath + "\\complexTest1.xml";
-    QMap<QString, CircuitConnection> circuitMap;
+    QMap<int, CircuitConnection> circuitMap;
 
     try {
         readInputFromFile(inputPath, circuitMap);
@@ -471,13 +471,13 @@ void connectionFromDocElement_tests::complexTest1()
     expectedSeq.addChild(&par1);
     expectedSeq.addChild(&seqComplex2);
 
-    COMPARE_CONNECTION_TREE(expectedSeq, circuitMap["seqComplex1"]);
+    COMPARE_CONNECTION_TREE(expectedSeq, *circuitMap.begin());
 }
 
 void connectionFromDocElement_tests::complexTest2()
 {
     QString inputPath = testsDirPath + "\\complexTest2.xml";
-    QMap<QString, CircuitConnection> circuitMap;
+    QMap<int, CircuitConnection> circuitMap;
 
     try {
         readInputFromFile(inputPath, circuitMap);
@@ -541,7 +541,7 @@ void connectionFromDocElement_tests::complexTest2()
     expectedSeq.addChild(&par1);
     expectedSeq.addChild(&par4);
 
-    COMPARE_CONNECTION_TREE(expectedSeq, circuitMap["seqComplex1"]);
+    COMPARE_CONNECTION_TREE(expectedSeq, *circuitMap.begin());
 }
 
 QTEST_APPLESS_MAIN(connectionFromDocElement_tests)

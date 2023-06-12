@@ -26,7 +26,7 @@ QString complexToStr(std::complex<double> num)
     return str;
 }
 
-void readInputFromFile(QString inputPath, QMap<QString, CircuitConnection>& circuitMap)
+void readInputFromFile(QString inputPath, QMap<int, CircuitConnection>& circuitMap)
 {
     // Создаем QFile на основе пути
     QFile xmlFile(inputPath);
@@ -126,7 +126,7 @@ void readInputFromFile(QString inputPath, QMap<QString, CircuitConnection>& circ
     CircuitConnection::connectionFromDocElement(circuitMap, rootElement, frequency);
 }
 
-void writeOutputToFile(QString outputPath, QMap<QString, CircuitConnection>& circuitMap)
+void writeOutputToFile(QString outputPath, QMap<int, CircuitConnection>& circuitMap)
 {
     // Создаем QFile на основе пути
     QFile outFile(outputPath);
@@ -146,7 +146,7 @@ void writeOutputToFile(QString outputPath, QMap<QString, CircuitConnection>& cir
         if (currentConnection.hasCustomName)
         {
             // Формируем строку вывода
-            QString outLine = QString("%1 = %2\n").arg(*keyIter, complexToStr(currentConnection.current));
+            QString outLine = QString("%1 = %2\n").arg(currentConnection.name, complexToStr(currentConnection.current));
 
             // Записываем в файл
             outFile.write(outLine.toStdString().c_str());
