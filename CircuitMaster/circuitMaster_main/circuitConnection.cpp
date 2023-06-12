@@ -15,14 +15,14 @@ CircuitConnection::CircuitConnection(ConnectionType startType)
     this->type = startType;
 }
 
-CircuitConnection::CircuitConnection(ConnectionType startType, QString startName)
+CircuitConnection::CircuitConnection(ConnectionType startType, QString const & startName)
 {
     this->type = startType;
     this->name = startName;
     this->hasCustomName = true;
 }
 
-CircuitConnection::CircuitConnection(ConnectionType startType, CircuitElement startElem)
+CircuitConnection::CircuitConnection(ConnectionType startType, CircuitElement const & startElem)
 {
     this->type = startType;
     this->addElement(startElem);
@@ -123,7 +123,7 @@ void CircuitConnection::calculateCurrentAndVoltage()
 
 }
 
-void CircuitConnection::addElement(CircuitElement newElem)
+void CircuitConnection::addElement(CircuitElement const & newElem)
 {
     this->elements.append(newElem);
 }
@@ -134,7 +134,7 @@ void CircuitConnection::addChild(CircuitConnection* newChildCircuit)
     newChildCircuit->parent = this;
 }
 
-CircuitConnection::ConnectionType CircuitConnection::strToConnectionType(QString strType)
+CircuitConnection::ConnectionType CircuitConnection::strToConnectionType(QString const & strType)
 {
     CircuitConnection::ConnectionType type;
     if (strType == "seq")
@@ -146,7 +146,7 @@ CircuitConnection::ConnectionType CircuitConnection::strToConnectionType(QString
     return type;
 }
 
-CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<int, CircuitConnection>& map, QDomNode node, double frequency)
+CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<int, CircuitConnection>& map, QDomNode const & node, double frequency)
 {
     // Основные переменные
     QDomElement element = node.toElement();

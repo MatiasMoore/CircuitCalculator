@@ -14,13 +14,13 @@ void COMPARE_COMPLEX(std::complex<double> expected, std::complex<double> actual,
     QVERIFY2(realDelta < epsilon && imagDelta < epsilon, message);
 }
 
-void COMPARE_ELEMENTS(CircuitElement expectedElement, CircuitElement actualElement)
+void COMPARE_ELEMENTS(CircuitElement const & expectedElement, CircuitElement const & actualElement)
 {
     QCOMPARE(actualElement.type, expectedElement.type);
     COMPARE_COMPLEX(actualElement.resistance, expectedElement.resistance, 0.001);
 }
 
-void COMPARE_CONNECTION(CircuitConnection expectedConnection, CircuitConnection actualConnection)
+void COMPARE_CONNECTION(CircuitConnection const & expectedConnection, CircuitConnection const & actualConnection)
 {
     QCOMPARE(actualConnection.name, expectedConnection.name);
     QCOMPARE(actualConnection.type, expectedConnection.type);
@@ -32,7 +32,7 @@ void COMPARE_CONNECTION(CircuitConnection expectedConnection, CircuitConnection 
     }
 }
 
-void COMPARE_CONNECTION_TREE(CircuitConnection expected, CircuitConnection actual)
+void COMPARE_CONNECTION_TREE(CircuitConnection const & expected, CircuitConnection const & actual)
 {
     COMPARE_CONNECTION(expected, actual);
     char mess[500];

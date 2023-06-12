@@ -47,14 +47,14 @@ class CircuitConnection
     * \param[in] startType - тип соединения
     * \param[in] startName - название соединения
     */
-    CircuitConnection(ConnectionType startType, QString startName);
+    CircuitConnection(ConnectionType startType, QString const & startName);
 
     /*!
     * \brief Конструктор соединения определенного типа с элементом
     * \param[in] startType - тип соединения
     * \param[in] startElem - элемент соединения
     */
-    CircuitConnection(ConnectionType startType, CircuitElement startElem);
+    CircuitConnection(ConnectionType startType, CircuitElement const & startElem);
 
     /*!
     * \brief Конструктор соединения определенного типа с известным сопротивлением
@@ -106,7 +106,7 @@ class CircuitConnection
     * \brief Добавить элемент в соединение
     * \param[in] newElem - новый элемент
     */
-    void addElement(CircuitElement newElem);
+    void addElement(CircuitElement const & newElem);
 
     /*!
     * \brief Добавить соединение-ребенка
@@ -119,7 +119,7 @@ class CircuitConnection
     * \param[in] strType - строка, содержащая название типа
     * \return - тип соединения
     */
-    static ConnectionType strToConnectionType(QString strType);
+    static ConnectionType strToConnectionType(QString const & strType);
 
     /*!
     * \brief Получить объекты класса из корневого элемента документа и записать в контейнер
@@ -128,7 +128,7 @@ class CircuitConnection
     * \param[in] frequency - частота перемнного тока, если неизвестна передать значение -1
     * \return - указатель на созданный в map объект класса
     */
-    static CircuitConnection* connectionFromDocElement(QMap<int, CircuitConnection>& map, QDomNode node, double frequency);
+    static CircuitConnection* connectionFromDocElement(QMap<int, CircuitConnection>& map, QDomNode const & node, double frequency);
 
 };
 

@@ -17,7 +17,7 @@
 */
 class CircuitElement
 {
-    friend void COMPARE_ELEMENTS(CircuitElement expectedElement, CircuitElement actualElement); /*!< Функция для сравнения элементов при тестировании */
+    friend void COMPARE_ELEMENTS(CircuitElement const & expectedElement, CircuitElement const & actualElement); /*!< Функция для сравнения элементов при тестировании */
 
     public:
     enum class ElemType
@@ -40,7 +40,7 @@ class CircuitElement
     * \param[in] node - элемент xml файла тэга \c <elem>
     * \param[in] frequency - частота переменного тока, если указана индуктивность или емкость. Если частота неизвестна, передавать -1
     */
-    CircuitElement(QDomNode node, double frequency);
+    CircuitElement(QDomNode const & node, double frequency);
 
     private:
     std::complex<double> resistance; /*!< Комплексное сопротивление элемента */
@@ -58,7 +58,7 @@ class CircuitElement
     * \param[in] typeStr - строка, содержащая название типа
     * \return - тип элемента
     */
-    static ElemType elemTypeFromStr(QString typeStr);
+    static ElemType elemTypeFromStr(QString const & typeStr);
 };
 
 #endif // CIRCUITELEMENT_H
