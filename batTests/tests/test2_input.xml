@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<par name="I0" voltage="100" frequency="50">
+	<seq name="I1">
+		<elem>
+			<type>R</type>
+			<res>6</res>
+		</elem>
+	</seq>
+	<seq name="I2">
+		<elem>
+			<type>L</type>
+			<ind>4e-3</ind>
+		</elem>
+	</seq>
+	<seq name="I3">
+		<elem>
+			<type>C</type>
+			<cap>25e-6</cap>
+		</elem>
+	</seq>
+</par>
+

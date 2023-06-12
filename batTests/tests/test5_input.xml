@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<par voltage="50">
+	<seq name="I1">
+		<elem>
+			<type>R</type>
+			<res>9</res>
+		</elem>
+		<elem>
+			<type>L</type>
+			<res>5</res>
+		</elem>
+	</seq>
+	<seq name="I2">
+		<elem>
+			<type>C</type>
+			<res>4.3</res>
+		</elem>
+		<elem>
+			<type>R</type>
+			<res>5</res>
+		</elem>
+	</seq>
+	<seq name="I3">
+		<elem>
+			<type>R</type>
+			<res>7.6</res>
+		</elem>
+		<elem>
+			<type>C</type>
+			<res>3.8</res>
+		</elem>
+	</seq>
+</par>
+
