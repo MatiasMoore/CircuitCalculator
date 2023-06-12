@@ -148,17 +148,19 @@ CircuitConnection::ConnectionType CircuitConnection::strToConnectionType(QString
 
 CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<int, CircuitConnection>& map, QDomNode node, double frequency)
 {
+    // Основные переменные
     QDomElement element = node.toElement();
     QString nodeType = element.tagName();
     QDomNodeList children = node.childNodes();
+    const QString elementLineNumStr = QString::number(element.lineNumber());
 
     //Обработка ошибок
     if (nodeType == "elem")
         throw QString("Неверное расположение элемента цепи на строке %1. Элементы могут "
-                      "располагаться только внутри простых последовательных соединений.").arg(QString::number(element.lineNumber()));
+                      "располагаться только внутри простых последовательных соединений.").arg(elementLineNumStr);
 
     if (nodeType != "seq" && nodeType != "par")
-        throw QString("Неизвестный тэг на строке %1.").arg(QString::number(element.lineNumber()));
+        throw QString("Неизвестный тэг на строке %1.").arg(elementLineNumStr);
 
     // Создаём новый объект соединения
     CircuitConnection newConnection;
@@ -172,7 +174,7 @@ CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<int, Circuit
     // Создаем имя, если не указано пользователем
     if (newName == "")
     {
-        newName = QString("%1_%2 на строке %3").arg(nodeType, QString::number(newId), QString::number(element.lineNumber()));
+        newName = QString("%1_%2 на строке %3").arg(nodeType, QString::number(newId), elementLineNumStr);
         newConnection.hasCustomName = false;
     }
     else
@@ -188,7 +190,7 @@ CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<int, Circuit
          // Ошибка, если значение меньше нуля
          if (voltageAtr <= 0)
             throw QString("Недопустимое значение напряжения у соединения на строке %1. Значение напряжения должно "
-                          "быть больше 0.").arg(QString::number(element.lineNumber()));
+                          "быть больше 0.").arg(elementLineNumStr);
 
          newConnection.setVoltage(voltageAtr);
      }
@@ -213,7 +215,7 @@ CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<int, Circuit
     {
         if (children.isEmpty())
         {
-            throw QString("Пустое соединение на строке %1.").arg(QString::number(element.lineNumber()));
+            throw QString("Пустое соединение на строке %1.").arg(elementLineNumStr);
         }
         // Рекурсивно обрабатываем каждого ребёнка текущей цепи
         for(int i = 0; i < children.count(); i++)
@@ -224,7 +226,7 @@ CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<int, Circuit
     {
         if (children.isEmpty())
         {
-            throw QString("Отсутсвуют элементы соединения на строке %1.").arg(QString::number(element.lineNumber()));
+            throw QString("Отсутсвуют элементы соединения на строке %1.").arg(elementLineNumStr);
         }
         // Добавляем все элементы в соединение
         for(int i = 0; i < children.count(); i++)
