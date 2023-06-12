@@ -57,11 +57,14 @@ int main(int argc, char *argv[])
         QMap<int, CircuitConnection> circuitMap;
         readInputFromFile(inputPath, circuitMap);
 
+        // Получаем корневое соединение
+        CircuitConnection& rootConnection = circuitMap.first();
+
         // Вычисляем сопротивления для всех соединений рекурсивно
-        circuitMap[*circuitMap.keyBegin()].calculateResistance();
+        rootConnection.calculateResistance();
 
         // Вычисляем силу тока и напряжение для всех соединений рекурсивно
-        circuitMap[*circuitMap.keyBegin()].calculateCurrentAndVoltage();
+        rootConnection.calculateCurrentAndVoltage();
 
         // Записываем результат в файл
         writeOutputToFile(outputPath, circuitMap);
