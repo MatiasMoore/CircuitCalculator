@@ -73,9 +73,19 @@ std::complex<double> CircuitConnection::calculateResistance()
         for (auto iter = this->children.begin(); iter != this->children.end(); iter++)
             reverseSum += 1.0 / (*iter)->calculateResistance();
 
+        // Ошибка, если обратное сопротивление меньше 0
+        if (reverseSum.real() == 0 && reverseSum.imag() == 0)
+            throw QString("При расчете сопротивления параллельного соединения %1 получено недопустимое значение. "
+                          "Проверьте правильность входных данных.").arg(this->name);
+
         // Находим сопротивление параллельной цепи
         this->resistance = 1.0 / reverseSum;
     }
+
+    // Ошибка, если сопротивление меньше 0
+    if (this->resistance.real() == 0 && this->resistance.imag() == 0)
+        throw QString("При расчете сопротивления соединения %1 был получен 0. Проверьте правильность входных данных.").arg(this->name);
+
     return this->resistance;
 }
 
