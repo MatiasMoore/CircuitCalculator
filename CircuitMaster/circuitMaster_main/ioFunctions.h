@@ -2,6 +2,7 @@
 #define IOFUNCTIONS_H
 #include <complex>
 #include <QString>
+#include <QStringList>
 #include <QFile>
 #include "circuitConnection.h"
 

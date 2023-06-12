@@ -137,21 +137,29 @@ void writeOutputToFile(QString outputPath, QMap<int, CircuitConnection>& circuit
         throw QString("Неверно указан файл для выходных данных. Возможно указанного расположения не существует или нет прав на запись.");
     }
 
-    // Для каждого соединения
-    for (auto keyIter = circuitMap.keyBegin(); keyIter != circuitMap.keyEnd(); keyIter++)
-    {
-        CircuitConnection& currentConnection = circuitMap[*keyIter];
+    // Список строк для вывода
+    QStringList outputLines;
 
+    // Для каждого соединения
+    for (auto connectionIter = circuitMap.begin(); connectionIter != circuitMap.end(); connectionIter++)
+    {
         // Если имя указано пользователем
-        if (currentConnection.hasCustomName)
+        if ((*connectionIter).hasCustomName)
         {
             // Формируем строку вывода
-            QString outLine = QString("%1 = %2\n").arg(currentConnection.name, complexToStr(currentConnection.current));
+            QString outLine = QString("%1 = %2\n").arg((*connectionIter).name, complexToStr((*connectionIter).current));
 
-            // Записываем в файл
-            outFile.write(outLine.toStdString().c_str());
+            // Добавляем в список
+            outputLines.append(outLine);
         }
     }
+
+    // Сортируем в алфавитном порядке
+    outputLines.sort();
+
+    // Записываем в файл
+    for(auto lineIter = outputLines.cbegin(); lineIter != outputLines.cend(); lineIter++)
+        outFile.write(lineIter->toStdString().c_str());
 
     // Закрываем файл
     outFile.close();
