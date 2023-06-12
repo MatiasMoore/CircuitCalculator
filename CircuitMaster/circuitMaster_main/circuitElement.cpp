@@ -99,24 +99,33 @@ CircuitElement::CircuitElement(QDomNode node, double frequency)
     {
         bool indCorrectValue;
         inductivity = inductivityElem.text().toDouble(&indCorrectValue);
+        QString indLineStr = QString::number(inductivityElem.lineNumber());
         if (!indCorrectValue)
-            throw QString("Неверный формат значения индуктивности на строке %1.").arg(QString::number(inductivityElem.lineNumber()));
+            throw QString("Неверный формат значения индуктивности на строке %1.").arg(indLineStr);
+        if (inductivity <= 0)
+            throw QString("Недопустимое значение индуктивности на строке %1. Значение индуктивности должно быть больше 0.").arg(indLineStr);
     }
     // Для емкости
     else if (!capacityElem.isNull())
     {
         bool capCorrectValue;
         capacity = capacityElem.text().toDouble(&capCorrectValue);
+        QString capLineStr = QString::number(capacityElem.lineNumber());
         if (!capCorrectValue)
-            throw QString("Неверный формат значения емкости на строке %1.").arg(QString::number(capacityElem.lineNumber()));
+            throw QString("Неверный формат значения емкости на строке %1.").arg(capLineStr);
+        if (capacity <= 0)
+            throw QString("Недопустимое значение емкости на строке %1. Значение емкости должно быть больше 0.").arg(capLineStr);
     }
     // Для сопротивления
     else if (!resistanceElem.isNull())
     {
         bool resCorrectValue;
         resistance = resistanceElem.text().toDouble(&resCorrectValue);
+        QString resLineStr = QString::number(resistanceElem.lineNumber());
         if (!resCorrectValue)
-            throw QString("Неверный формат значения сопротивления на строке %1.").arg(QString::number(resistanceElem.lineNumber()));
+            throw QString("Неверный формат значения сопротивления на строке %1.").arg(resLineStr);
+        if (resistance <= 0)
+            throw QString("Недопустимое значение сопротивления на строке %1. Значение сопротивления должно быть больше 0.").arg(resLineStr);
     }
 
     // Рассчёт активного сопротивления
