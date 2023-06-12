@@ -172,7 +172,7 @@ CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<int, Circuit
     // Создаем имя, если не указано пользователем
     if (newName == "")
     {
-        newName = QString::number(newId);
+        newName = QString("%1_%2 на строке %3").arg(nodeType, QString::number(newId), QString::number(element.lineNumber()));
         newConnection.hasCustomName = false;
     }
     else
