@@ -180,7 +180,14 @@ CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<QString, Cir
     // Получаем значение напряжения, если указано
     double voltageAtr = element.attribute("voltage", "-1").toDouble();
      if (voltageAtr != -1)
+     {
+         // Ошибка, если значение меньше нуля
+         if (voltageAtr <= 0)
+            throw QString("Недопустимое значение напряжения у соединения на строке %1. Значение напряжения должно "
+                          "быть больше 0.").arg(QString::number(element.lineNumber()));
+
          newConnection.setVoltage(voltageAtr);
+     }
 
     // Добавляем объект в QMap всех соединений цепи
     map.insert(newName, newConnection);
