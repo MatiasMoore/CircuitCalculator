@@ -64,6 +64,7 @@ class CircuitConnection
     CircuitConnection(ConnectionType startType, std::complex<double> startResistance);
 
     public:
+    int id; /*!< id соединения */
     QString name; /*!< Название соединения */    
     ConnectionType type; /*!< Тип соединения */
     QList<CircuitElement> elements; /*!< QList элементов соединения */

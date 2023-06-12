@@ -163,12 +163,15 @@ CircuitConnection* CircuitConnection::connectionFromDocElement(QMap<QString, Cir
     // Создаём новый объект соединения
     CircuitConnection newConnection;
 
+    // Присваиваем идентификатор
+    int newId = map.keys().count() + 1;
+    newConnection.id = newId;
+
     // Получаем название соединения
     QString newName = element.attribute("name", "");
     // Создаем имя, если не указано пользователем
     if (newName == "")
     {
-        int newId = map.keys().count() + 1;
         newName = QString::number(newId);
         newConnection.hasCustomName = false;
     }
