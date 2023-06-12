@@ -11,7 +11,7 @@ CircuitElement::CircuitElement(ElemType startType, std::complex<double> startVal
     this->resistance = startValue;
 }
 
-CircuitElement::CircuitElement(QDomNode node, double frequency)
+CircuitElement::CircuitElement(QDomNode const & node, double frequency)
 {
     // Инициализация основных переменных
     bool isFrequencyKnown = frequency != -1;
@@ -165,7 +165,7 @@ std::complex<double> CircuitElement::getElemResistance() const
     return this->resistance;
 }
 
-CircuitElement::ElemType CircuitElement::elemTypeFromStr(QString typeStr)
+CircuitElement::ElemType CircuitElement::elemTypeFromStr(QString const & typeStr)
 {
     if (typeStr == "R")
         return ElemType::R;

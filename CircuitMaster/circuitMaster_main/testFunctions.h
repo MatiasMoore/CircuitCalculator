@@ -24,20 +24,20 @@ void COMPARE_COMPLEX(std::complex<double> expected, std::complex<double> actual,
 * \param[in] expected - ожидаемый элемент
 * \param[in] actual - полученный элемент
 */
-void COMPARE_ELEMENTS(CircuitElement expected, CircuitElement actual);
+void COMPARE_ELEMENTS(CircuitElement const & expected, CircuitElement const & actual);
 
 /*!
 * \brief Аналог QCOMPARE для соединений
 * \param[in] expected - ожидаемое соединение
 * \param[in] actual - полученное соединение
 */
-void COMPARE_CONNECTION(CircuitConnection expected, CircuitConnection actual);
+void COMPARE_CONNECTION(CircuitConnection const & expected, CircuitConnection const & actual);
 
 /*!
 * \brief Аналог QCOMPARE для дерева соединений
 * \param[in] expected - ожидаемое дерево соединений
 * \param[in] actual - полученное дерево соединений
 */
-void COMPARE_CONNECTION_TREE(CircuitConnection expected, CircuitConnection actual);
+void COMPARE_CONNECTION_TREE(CircuitConnection const & expected, CircuitConnection const & actual);
 
 #endif // TESTFUNCTIONS_H
