@@ -9,7 +9,8 @@
 *\brief Тесты для создания соединения на основе xml файла
 */
 
-const QString testsDirPath = "tests";
+const QString testsDirPath = "..\\..\\testFiles\\connectionFromDocElement_tests";
+
 class connectionFromDocElement_tests : public QObject
 {
     Q_OBJECT

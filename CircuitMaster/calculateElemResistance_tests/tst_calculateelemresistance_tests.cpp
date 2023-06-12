@@ -9,7 +9,7 @@
 *\brief Тесты для вычисления сопротивления элементов цепи
 */
 
-const QString testsDirPath = "tests";
+const QString testsDirPath = "..\\..\\testFiles\\calculateElemResistance_tests";
 
 class calculateElemResistance_tests : public QObject
 {
