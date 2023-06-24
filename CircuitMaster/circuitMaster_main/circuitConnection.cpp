@@ -34,6 +34,31 @@ CircuitConnection::CircuitConnection(ConnectionType startType, std::complex<doub
     this->resistance = startResistance;
 }
 
+QString CircuitConnection::getName() const
+{
+    return this->name;
+}
+
+bool CircuitConnection::isNameCustom() const
+{
+    return this->hasCustomName;
+}
+
+std::complex<double> CircuitConnection::getCurrent() const
+{
+    return this->current;
+}
+
+std::complex<double> CircuitConnection::getVoltage() const
+{
+    return this->voltage;
+}
+
+void CircuitConnection::setParent(CircuitConnection* newParentPtr)
+{
+    this->parent = newParentPtr;
+}
+
 void CircuitConnection::setVoltage(std::complex<double> newVolt)
 {
     this->voltage = newVolt;

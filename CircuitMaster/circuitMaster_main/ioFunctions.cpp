@@ -144,10 +144,10 @@ void writeOutputToFile(QString const & outputPath, QMap<int, CircuitConnection>&
     for (auto connectionIter = circuitMap.begin(); connectionIter != circuitMap.end(); connectionIter++)
     {
         // Если имя указано пользователем
-        if ((*connectionIter).hasCustomName)
+        if ((*connectionIter).isNameCustom())
         {
             // Формируем строку вывода
-            QString outLine = QString("%1 = %2\n").arg((*connectionIter).name, complexToStr((*connectionIter).current));
+            QString outLine = QString("%1 = %2\n").arg((*connectionIter).getName(), complexToStr((*connectionIter).getCurrent()));
 
             // Добавляем в список
             outputLines.append(outLine);

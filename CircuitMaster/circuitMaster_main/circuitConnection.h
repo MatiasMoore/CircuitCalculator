@@ -21,6 +21,10 @@
 */
 class CircuitConnection
 {
+    friend void COMPARE_CONNECTION(CircuitConnection const & expected, CircuitConnection const & actual); /*!< Функция для сравнения соединений при тестировании */
+
+    friend void COMPARE_CONNECTION_TREE(CircuitConnection const & expected, CircuitConnection const & actual);  /*!< Функция для сравнения соединений и их детей при тестировании */
+
     public:
     enum class ConnectionType
     {
@@ -63,7 +67,7 @@ class CircuitConnection
     */
     CircuitConnection(ConnectionType startType, std::complex<double> startResistance);
 
-    public:
+    private:
     int id; /*!< id соединения */
     QString name; /*!< Название соединения */    
     ConnectionType type; /*!< Тип соединения */
@@ -77,6 +81,36 @@ class CircuitConnection
     bool isVoltageSet = false; /*!< Известно ли напряжение */
     bool isCurrentSet = false; /*!< Известна ли сила тока */
     public:
+
+    /*!
+    * \brief Получить имя соединения цепи
+    * \return - имя соединения цепи
+    */
+    QString getName() const;
+
+    /*!
+    * \brief Узнать, задано ли имя пользователем
+    * \return - true, если имя задано пользователем
+    */
+    bool isNameCustom() const;
+
+    /*!
+    * \brief Получить комплексную силу тока соединения цепи
+    * \return - комплексная сила тока соединения цепи
+    */
+    std::complex<double> getCurrent() const;
+
+    /*!
+    * \brief Получить комплексное напряжение соединения цепи
+    * \return - комплексное напряжение соединения цепи
+    */
+    std::complex<double> getVoltage() const;
+
+    /*!
+    * \brief Задать указатель на соединение-родитель
+    * \param[in] newParentPtr - новый указатель на соединение-родителя
+    */
+    void setParent(CircuitConnection* newParentPtr);
 
     /*!
     * \brief Установить значение напряжения соединения
