@@ -2,6 +2,7 @@
 #include <QMap>
 #include "circuitConnection.h"
 #include "ioFunctions.h"
+#include <QDebug>
 
 /*!
 *\file
@@ -39,10 +40,13 @@ circuitMaster_main.exe C:\input.xml C:\output.txt
 */
 int main(int argc, char *argv[])
 {
+    // Устанавливаем кодировку для русских символов
+    setlocale(LC_ALL, "Russian");
+
     // Проверяем кол-во аргументов, завершаем программу, если их недостаточно
     if (argc != 3)
     {
-        printf("Неверное количество аргументов.\n");
+        qDebug() << QString("Неверное количество аргументов.");
         return 1;
     }
 
@@ -71,7 +75,7 @@ int main(int argc, char *argv[])
 
     } catch (QString str) {
         // В случае ошибки, вывести её в консоль и завершить выполнение программы
-        puts(str.toStdString().c_str());
+        qDebug() << str;
         return 1;
     }
 
